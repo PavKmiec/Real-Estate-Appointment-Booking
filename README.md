@@ -1,2 +1,3 @@
-# BookingAppProperties
-College work - Booking Web App
+# BookingWebsite
+Booking system web app in c# .net core mvc - practice
+It's a work in progress...
