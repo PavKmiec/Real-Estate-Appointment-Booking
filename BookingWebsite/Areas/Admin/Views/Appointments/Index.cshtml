@@ -66,7 +66,15 @@
     </div>
     
     <br/><br/>
-    
+    @if (TempData.ContainsKey("Delete"))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Done!</strong> @TempData["Delete"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
     
     <div>
         <table class="table table-striped border">
@@ -134,6 +142,11 @@
         </table>
 
     </div>
+    @*Including Pagination that we have build in the page - by calling our custom tag helper*@
+    <div page-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true" page-class="btn border" page-class-normal="btn btn-default active"
+         page-class-selected="btn btn-primary active" class="btn-group m-1"></div>
+    
+
 </form>
 
 @section Scripts
@@ -146,4 +159,6 @@
             });
         });
     </script>
+    
+    
 }

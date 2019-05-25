@@ -46,8 +46,8 @@ namespace BookingWebsite
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddSessionStateTempDataProvider(); //TODO THIS!
             // Adding service for sessions and configure options
             services.AddSession(options =>
             {

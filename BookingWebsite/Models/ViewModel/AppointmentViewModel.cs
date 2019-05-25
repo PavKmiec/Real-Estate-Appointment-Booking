@@ -19,5 +19,10 @@ namespace BookingWebsite.Models.ViewModel
         public IEnumerable<Appointments> Appointments { get; set; }
 
 
+        // paging
+        public PagingInfo PagingInfo { get; set; }
+
+
+
     }
 }
