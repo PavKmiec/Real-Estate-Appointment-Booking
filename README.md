@@ -1,3 +1,3 @@
 # BookingWebsite
-Booking system web app in c# .net core mvc - practice
+Booking system web app project in c# .net core mvc - practice / college
 It's a work in progress...
