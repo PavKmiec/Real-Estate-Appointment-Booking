@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -13,6 +16,9 @@ using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
@@ -318,10 +324,13 @@ namespace BookingWebsite.Areas.Admin.Controllers
             {
 
                 Appointment = _db.Appointments.Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault(),
-                SalesPerson = _db.ApplicationUser.ToList(),
-                Products = productList.ToList()
-
+                SalesPerson = _db.ApplicationUser.ToList(), // TODO FIX THIS
+                Products = productList.ToList(),
+                
+                
             };
+
+            Debug.WriteLine(objAppointmentVM.SalesPerson);
 
 
             // now that we have our products we ween to pas the m on to the view don't we? ;-) 
@@ -387,5 +396,136 @@ namespace BookingWebsite.Areas.Admin.Controllers
             TempData.Add("Delete"," You have successfully removed an appointment,... now what? ;-)");
             return RedirectToAction(nameof(Index));
         }
-    }
+
+
+
+        public async Task<IActionResult> AppList()
+        {
+            var appList = _db.Appointments.Include(a => a.SalesPerson); //TODO FIX THIS
+            return View(appList);
+        }
+
+
+        // we can refactor this to Result to have more flexibility with returning but lest just make it simple for now
+        // we shroud also specify viewModel rather than anonymous type to be "correct" but lets kep it simple for now
+        // later on this can be also expanded with SQL JOIN query to include products (for example to include price of a property)
+        public void AppListDownload()
+        {
+            //TODO make SQL JOIN query to include product type and price in report
+            var appointmentsDw = from appointments in _db.Appointments.Include(a => a.SalesPerson)
+                //join selProducts in _db.ProductsSelectedForAppointments on appointments.Id equals selProducts.ProductId
+                orderby appointments.AppointmentDate descending
+                select new
+                {
+                    Date = appointments.AppointmentDate,
+                    Name = appointments.CustomerName,
+                    Email = appointments.CustomerEmail,
+                    Phone = appointments.CustomerPhoneNumber,
+                    SalesPerson = appointments.SalesPerson.Name,
+                    Confirmed = appointments.isConfirmed,
+                    //ProductType = selProducts.Products.ProductTypes.Name,
+                    //ProductPrice = selProducts.Products.Price
+
+                };
+
+
+            //var productList = (IEnumerable<Products>)(from p in _db.Products
+            //    join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
+            //    where a.AppointmentId == id
+            //    select p).Include("ProductTypes");
+
+
+
+
+
+            // how many rows is there?
+            int numRows = appointmentsDw.Count();
+
+            // lets check if there is any data
+            if (numRows > 0) // if there is data
+            {
+                // create new instance of excel package - from scratch - it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
+                ExcelPackage excel = new ExcelPackage();
+
+                // add excel worksheet
+                var workSheet = excel.Workbook.Worksheets.Add("Appointments");
+
+                // lets throw some data at our worksheet
+                // collection; bool for Load Headers;
+                workSheet.Cells[3, 1].LoadFromCollection(appointmentsDw, true);
+                workSheet.Column(1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
+
+                //We can define block od cells Cells[startRow, startColumn, endRow, endColumn]
+                workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
+
+                // style heading a little
+                using (ExcelRange headings = workSheet.Cells[3, 1, 3, 7])
+                {
+                    headings.Style.Font.Bold = true;
+                    var fill = headings.Style.Fill;
+                    fill.PatternType = ExcelFillStyle.Solid;
+                    fill.BackgroundColor.SetColor(Color.AliceBlue);
+                }
+                
+                // fit columns size
+                workSheet.Cells.AutoFitColumns();
+
+
+                // lets add title to the top
+                workSheet.Cells[1, 1].Value = "Appointment Report";
+                using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 6])
+                {
+                    Rng.Merge = true; // Merge columns start and end range
+                    Rng.Style.Font.Bold = true;
+                    Rng.Style.Font.Size = 18;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                }
+
+                // time of report - time issue - time zones? server time?
+
+                DateTime utcDate = DateTime.UtcNow;
+                TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                var localDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, timeZone);
+                using (ExcelRange Rng = workSheet.Cells[2, 6])
+                {
+
+                    Rng.Value = "Created: " + localDate.ToShortTimeString() + " on " + localDate.ToShortDateString();
+                    Rng.Style.Font.Bold = true;
+                    Rng.Style.Font.Size = 12;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                }
+
+                // ok, its time to download our excel file
+
+
+                //one thing to bare in mind is file size and memory, on a local pc it's fine we have plenty of memory,
+                //but on a server it may be an issue to load the whole thing - possible out of memory exceptions
+                // what we can do to make sure we are thinking about memory is to stream the data
+
+                // so, lets set up MemoryStream
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.Headers["content-disposition"] = "attachment; filename=Appointments.xlsx"; // could ad date time to file
+                    excel.SaveAs(memoryStream);
+                    memoryStream.WriteTo(Response.Body);
+                }
+
+
+
+
+
+
+            }
+
+        }
+
+
+
+     
+
+
+    }//Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault()
 }

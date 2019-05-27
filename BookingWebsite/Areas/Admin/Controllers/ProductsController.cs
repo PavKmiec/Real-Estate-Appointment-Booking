@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using BookingWebsite.Data;
 using BookingWebsite.Models;
@@ -12,6 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace BookingWebsite.Controllers
 {
@@ -50,8 +54,9 @@ namespace BookingWebsite.Controllers
         }
 
         
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()  
         {
+
 
             // return list of products
             var products = _db.Products.Include(m => m.ProductTypes).Include(m => m.Tags);
@@ -313,6 +318,108 @@ namespace BookingWebsite.Controllers
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+
+        }
+
+
+
+        public void ProdListDownload()
+        {
+            var productDW = from a in _db.Products.Include(a=>a.ProductTypes)
+                            orderby a.Name descending
+                            select new
+                            {
+                                Name = a.Name,
+                                Price = a.Price,
+                                Type = a.ProductTypes.Name,
+                                Avaiable = a.Available,
+                                FurnishLevel = a.FurnishDetail,
+                                Extras = a.Tags.Name,
+
+                            };
+
+
+            // how many rows is there?
+            int numRows = productDW.Count();
+
+            // lets check if there is any data
+            if (numRows > 0) // if there is data
+            {
+                // create new instance of excel package - from scratch - it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
+                ExcelPackage excel = new ExcelPackage();
+
+                // add excel worksheet
+                var workSheet = excel.Workbook.Worksheets.Add("Products");
+
+                // lets throw some data at our worksheet
+                // collection; bool for Load Headers;
+                workSheet.Cells[3, 1].LoadFromCollection(productDW, true);
+                //workSheet.Column(1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
+
+                //We can define block od cells Cells[startRow, startColumn, endRow, endColumn]
+                workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
+
+                // style heading a little
+                using (ExcelRange headings = workSheet.Cells[3, 1, 3, 7])
+                {
+                    headings.Style.Font.Bold = true;
+                    var fill = headings.Style.Fill;
+                    fill.PatternType = ExcelFillStyle.Solid;
+                    fill.BackgroundColor.SetColor(Color.AliceBlue);
+                }
+
+                // fit columns size
+                workSheet.Cells.AutoFitColumns();
+
+
+                // lets add title to the top
+                workSheet.Cells[1, 1].Value = "Products List Report";
+                using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 6])
+                {
+                    Rng.Merge = true; // Merge columns start and end range
+                    Rng.Style.Font.Bold = true;
+                    Rng.Style.Font.Size = 18;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                }
+
+                // time of report - time issue - time zones? server time?
+
+                DateTime utcDate = DateTime.UtcNow;
+                TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                var localDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, timeZone);
+                using (ExcelRange Rng = workSheet.Cells[2, 6])
+                {
+
+                    Rng.Value = "Created: " + localDate.ToShortTimeString() + " on " + localDate.ToShortDateString();
+                    Rng.Style.Font.Bold = true;
+                    Rng.Style.Font.Size = 12;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                }
+
+                // ok, its time to download our excel file
+
+
+                //one thing to bare in mind is file size and memory, on a local pc it's fine we have plenty of memory,
+                //but on a server it may be an issue to load the whole thing - possible out of memory exceptions
+                // what we can do to make sure we are thinking about memory is to stream the data
+
+                // so, lets set up MemoryStream
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.Headers["content-disposition"] = "attachment; filename=ProductList.xlsx"; // could add date time to file
+                    excel.SaveAs(memoryStream);
+                    memoryStream.WriteTo(Response.Body);
+                }
+
+
+
+
+
+
+            }
 
         }
 

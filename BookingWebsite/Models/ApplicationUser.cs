@@ -10,6 +10,9 @@ namespace BookingWebsite.Models
 {
     public class ApplicationUser : IdentityUser
     {
+
+
+
         [Display(Name = "Sales Person")]
         public string Name { get; set; }
 

@@ -1,0 +1,69 @@
+﻿@model IEnumerable<BookingWebsite.Models.Appointments>
+
+@{
+    ViewData["Title"] = "AppList";
+}
+
+<h2>AppList</h2>
+<br/>
+@*@Html.ActionLink("Exoprt To Excel", "Reports", new { ReportType = "Excel" }) |
+@Html.ActionLink("Exoprt To PDF", "Reports", new { ReportType = "PDF" }) |
+@Html.ActionLink("Exoprt To Word", "Reports", new { ReportType = "Word" }) |
+@Html.ActionLink("Exoprt To Image", "Reports", new { ReportType = "Image" }) |*@
+
+<a asp-action="AppListDownload" asp-controller="Appointments" class="btn btn-info">Download Appointments</a>
+<br/><br/>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AppointmentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerPhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.isConfirmed)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SalesPerson.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AppointmentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerPhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.isConfirmed)
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>

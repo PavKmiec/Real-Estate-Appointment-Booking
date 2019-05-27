@@ -10,8 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.4" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +33,7 @@
   <ItemGroup>
     <Folder Include="Areas\Identity\Services\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Reports\" />
     <Folder Include="wwwroot\images\ProductImage\" />
   </ItemGroup>
 

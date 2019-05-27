@@ -2,12 +2,13 @@
 
 
 <form method="get">
-    <br/><br/>
+    <br /><br />
     <h2 class="text-info">Appointment List</h2>
-    <br/>
-    
+    <a asp-action="AppListDownload" asp-controller="Appointments" class="btn btn-info">Download All Appointments</a>
+    <br />
+
     <div style="height: 150px; background-color: aliceblue" class="container">
-        
+
         <div class="col-12">
             <div class="row" style="padding-top: 10px;">
                 <div class="col-2">
@@ -17,7 +18,6 @@
                     @Html.Editor("searchName", new { htmlAttributes = new { @class = "form-control" } })
                 </div>
                 <div class="col-2">
-
                 </div>
                 <div class="col-2">
                     Email
@@ -26,7 +26,6 @@
                     @Html.Editor("searchEmail", new { htmlAttributes = new { @class = "form-control" } })
                 </div>
             </div>
-
             <div class="row" style="padding-top: 10px;">
                 <div class="col-2">
                     Phone Number
@@ -35,13 +34,12 @@
                     @Html.Editor("searchPhone", new { htmlAttributes = new { @class = "form-control" } })
                 </div>
                 <div class="col-2">
-
                 </div>
                 <div class="col-2">
                     Appointment Date
                 </div>
                 <div class="col-3">
-                    @Html.Editor("searchDate", new { htmlAttributes = new { @class = "form-control", @id="datepicker" } })
+                    @Html.Editor("searchDate", new { htmlAttributes = new { @class = "form-control", @id = "datepicker" } })
                 </div>
             </div>
             <div class="row" style="padding-top: 10px;">
@@ -50,7 +48,6 @@
                 <div class="col-3">
                 </div>
                 <div class="col-2">
-
                 </div>
                 <div class="col-2">
                 </div>
@@ -62,10 +59,9 @@
             </div>
         </div>
 
-
     </div>
-    
-    <br/><br/>
+
+    <br /><br />
     @if (TempData.ContainsKey("Delete"))
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -75,7 +71,7 @@
             </button>
         </div>
     }
-    
+
     <div>
         <table class="table table-striped border">
             <tr class="table-info">
@@ -98,54 +94,40 @@
                     @Html.DisplayNameFor(m => m.Appointments.FirstOrDefault().isConfirmed)
                 </th>
                 <th></th>
-
             </tr>
-            
+
             @foreach (var item in Model.Appointments)
             {
                 <tr>
                     <td>
                         @Html.DisplayFor(m => item.SalesPerson.Name)
-
                     </td>
-
                     <td>
                         @Html.DisplayFor(m => item.AppointmentDate)
-
                     </td>
                     <td>
                         @Html.DisplayFor(m => item.CustomerName)
-
                     </td>
                     <td>
                         @Html.DisplayFor(m => item.CustomerPhoneNumber)
-
                     </td>
                     <td>
                         @Html.DisplayFor(m => item.CustomerEmail)
-
                     </td>
                     <td>
                         @Html.DisplayFor(m => item.isConfirmed)
-
                     </td>
-
                     <td>
-                        <partial name="_TableButtonPartial" model="item.Id"/>
-
+                        <partial name="_TableButtonPartial" model="item.Id" />
                     </td>
-
                 </tr>
             }
 
-
         </table>
-
     </div>
     @*Including Pagination that we have build in the page - by calling our custom tag helper*@
     <div page-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true" page-class="btn border" page-class-normal="btn btn-default active"
          page-class-selected="btn btn-primary active" class="btn-group m-1"></div>
-    
 
 </form>
 
