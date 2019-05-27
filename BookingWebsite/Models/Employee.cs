@@ -12,7 +12,7 @@ namespace BookingWebsite.Models
         public string Grade { get; set; }
         public bool isManager { get; set; }
 
-        public int BranchId { get; set; }
+        // add navigation to branch
 
 
     }

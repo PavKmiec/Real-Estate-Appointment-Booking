@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BookingWebsite.Data;
+using BookingWebsite.Extensions;
 using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
@@ -96,6 +98,7 @@ namespace BookingWebsite.Controllers
 
             // files will have files uploaded from the View
             var files = HttpContext.Request.Form.Files;
+            
 
 
 

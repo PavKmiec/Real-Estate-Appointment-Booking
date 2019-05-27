@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Utility
 {
+
+    /// <summary>
+    /// SD - Static Details Class to hold static values that are reused in the system
+    /// </summary>
     public class SD
     {
 

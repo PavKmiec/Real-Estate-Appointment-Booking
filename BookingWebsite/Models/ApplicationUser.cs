@@ -13,8 +13,13 @@ namespace BookingWebsite.Models
 
 
 
-        [Display(Name = "Sales Person")]
+        
         public string Name { get; set; }
+        public string StreetAddress { get; set; }
+        public string City { get; set; }
+        public string PostCode { get; set; }
+
+
 
         [NotMapped]
         public bool IsSuperAdmin { get; set; }

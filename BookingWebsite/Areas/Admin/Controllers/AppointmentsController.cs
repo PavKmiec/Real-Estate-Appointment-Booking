@@ -413,7 +413,6 @@ namespace BookingWebsite.Areas.Admin.Controllers
         {
             //TODO make SQL JOIN query to include product type and price in report
             var appointmentsDw = from appointments in _db.Appointments.Include(a => a.SalesPerson)
-                //join selProducts in _db.ProductsSelectedForAppointments on appointments.Id equals selProducts.ProductId
                 orderby appointments.AppointmentDate descending
                 select new
                 {
@@ -423,17 +422,9 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     Phone = appointments.CustomerPhoneNumber,
                     SalesPerson = appointments.SalesPerson.Name,
                     Confirmed = appointments.isConfirmed,
-                    //ProductType = selProducts.Products.ProductTypes.Name,
-                    //ProductPrice = selProducts.Products.Price
+
 
                 };
-
-
-            //var productList = (IEnumerable<Products>)(from p in _db.Products
-            //    join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
-            //    where a.AppointmentId == id
-            //    select p).Include("ProductTypes");
-
 
 
 
@@ -444,7 +435,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
             // lets check if there is any data
             if (numRows > 0) // if there is data
             {
-                // create new instance of excel package - from scratch - it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
+                // create new instance of excel package - from scratch - later it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
                 ExcelPackage excel = new ExcelPackage();
 
                 // add excel worksheet
@@ -455,10 +446,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 workSheet.Cells[3, 1].LoadFromCollection(appointmentsDw, true);
                 workSheet.Column(1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
 
-                //We can define block od cells Cells[startRow, startColumn, endRow, endColumn]
+                //We can define block of cells Cells[startRow, startColumn, endRow, endColumn]
                 workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
 
-                // style heading a little
+                // style heading a little - cosmetic styling
                 using (ExcelRange headings = workSheet.Cells[3, 1, 3, 7])
                 {
                     headings.Style.Font.Bold = true;
@@ -467,7 +458,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     fill.BackgroundColor.SetColor(Color.AliceBlue);
                 }
                 
-                // fit columns size
+                // fit columns size - autofin based on lenght of data in the cells
                 workSheet.Cells.AutoFitColumns();
 
 
