@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookingWebsite.Data;
+using BookingWebsite.Service;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,6 +47,13 @@ namespace BookingWebsite
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI() // bootstrap 4 ?
                 .AddDefaultTokenProviders();
+
+
+            // email
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
+
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddSessionStateTempDataProvider(); //TODO THIS! (enables bootstrap warning box via tempData)

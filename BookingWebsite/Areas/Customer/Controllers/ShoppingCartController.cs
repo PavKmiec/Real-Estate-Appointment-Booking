@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingWebsite.Data;
 using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using BookingWebsite.Extensions;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingWebsite.Areas.Customer.Controllers
@@ -17,15 +20,21 @@ namespace BookingWebsite.Areas.Customer.Controllers
         // dependency injection for ApplicationDbContext
         private readonly ApplicationDbContext _db;
 
+        private readonly IEmailSender _emailSender;
+
+
+
         // bind a ShoppingCartViewModel property that will be used in this controller,
         //this way we don't need to use this in parameters every time
         [BindProperty]
         public ShoppingCartViewModel ShoppingCartVM { get; set; }
 
         // constructor
-        public ShoppingCartController(ApplicationDbContext db)
+        public ShoppingCartController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
+
             // initialise ShoppingCartVM
             ShoppingCartVM = new ShoppingCartViewModel()
             {
@@ -38,7 +47,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
         }
         // Get Index for Shopping Cart
         // we need to retrive cart items that are in the session 
-        // besed on those Is's we need to populate ViewModel
+        // besed on those Id's we need to populate ViewModel
 
         public async Task<IActionResult> Index()
         {
@@ -61,8 +70,15 @@ namespace BookingWebsite.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Index")]
-        public IActionResult IndexPost() // no need for parameters because we have already bind it
+        public async Task<IActionResult> IndexPost() // no need for parameters because we have already bind it
         {
+            //claims
+            var claimsIdentity = (ClaimsIdentity) User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+
+
+
             // retrive list of items from session
             List<int> lstCartItems = HttpContext.Session.Get<List<int>>("ssShoppingCart");
 
@@ -98,6 +114,15 @@ namespace BookingWebsite.Areas.Customer.Controllers
                 
 
             }
+
+
+            // email TODO - ADD claims to get current logged in User 
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+                "Open Properties - Your Appointment",
+                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+
+            Debug.WriteLine("Email Reached");
+
             _db.SaveChanges();
             // emply list cart items
             lstCartItems = new List<int>();
@@ -136,8 +161,13 @@ namespace BookingWebsite.Areas.Customer.Controllers
         //GET
         // Appointment confirmation controller / passing appointment id as parameter
 
-        public IActionResult AppointmentConfirmation(int id)
+        public async Task<IActionResult> AppointmentConfirmation(int id)
         {
+
+            //claims
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
             // fill shopping cart view model based of the appointment ID 
             ShoppingCartVM.Appointments = _db.Appointments.Where(a => a.Id == id).FirstOrDefault();
 
@@ -153,6 +183,15 @@ namespace BookingWebsite.Areas.Customer.Controllers
                 ShoppingCartVM.Products.Add(_db.Products.Include(p=>p.ProductTypes).Include(p=>p.Tags).Where(p=>p.Id == prodAptObj.ProductId).FirstOrDefault());
                 
             }
+
+            // email TODO - ADD claims to get current logged in User 
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+                "Open Properties - Your Appointment",
+                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+
+            Debug.WriteLine("Email Reached");
+
+
 
             return View(ShoppingCartVM);
 
