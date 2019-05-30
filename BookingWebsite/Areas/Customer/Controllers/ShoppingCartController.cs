@@ -116,10 +116,10 @@ namespace BookingWebsite.Areas.Customer.Controllers
             }
 
 
-            // email TODO - ADD claims to get current logged in User 
-            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
-                "Open Properties - Your Appointment",
-                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+            //// email TODO - This is working ok but enabe it when login is required is implemented 
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
 
             Debug.WriteLine("Email Reached");
 
@@ -184,12 +184,12 @@ namespace BookingWebsite.Areas.Customer.Controllers
                 
             }
 
-            // email TODO - ADD claims to get current logged in User 
-            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
-                "Open Properties - Your Appointment",
-                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+            //// email TODO - ADD claims to get current logged in User - ENABLE when login required Implemented
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
 
-            Debug.WriteLine("Email Reached");
+            //Debug.WriteLine("Email Reached");
 
 
 
