@@ -6,12 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20190530004804_ListEMPINBRANCH.cs" />
+    <Compile Remove="Data\Migrations\20190530004804_ListEMPINBRANCH.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\css\MyStyle.css" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.1.1" />
   </ItemGroup>
 

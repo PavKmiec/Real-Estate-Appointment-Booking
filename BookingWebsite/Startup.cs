@@ -41,7 +41,7 @@ namespace BookingWebsite
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()  // Added Identity role
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI() // bootstrap 4 ?
                 .AddDefaultTokenProviders();

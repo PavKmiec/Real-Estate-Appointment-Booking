@@ -17,9 +17,14 @@ namespace BookingWebsite.Utility
 
 
         // roles
-        public const string AdminEndUser = "Admin";
-        public const string SuperAdminEndUser = "Super Admin";
+
+
+        public const string SuperAdminEndUser = "Admin";
+        public const string AdminEndUser = "Manager";
+        public const string Employee = "Employee";
         public const string CustomerEndUser = "Customer";
+        public const string SellerEndUser = "Seller";
+
 
     }
 }

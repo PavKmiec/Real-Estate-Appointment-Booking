@@ -16,6 +16,16 @@ namespace BookingWebsite.Models
 
 
 
-        // add navigation to link with employee, manager, 
+        public virtual ICollection<Employee> Employees { get; set; }
+
+        public Branch()
+        {
+
+            Employees = new List<Employee>(); 
+        }
+        
     }
+
+
+    
 }

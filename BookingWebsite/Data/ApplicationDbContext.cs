@@ -33,6 +33,20 @@ namespace BookingWebsite.Data
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
 
 
+        // Employee
+        public DbSet<Employee> Employees { get; set; }
+
+
+        //
+        public DbSet<Branch> Branches { get; set; }
+
+
+        // Customer
+
+
+
+
+
 
 
     }
