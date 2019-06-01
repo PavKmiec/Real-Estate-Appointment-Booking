@@ -25,17 +25,18 @@
             <th>
                 @*Display name from model*@
                 @Html.DisplayNameFor(m => m.Name)
-
             </th>
             <th>
                 @*Display name from model*@
                 @Html.DisplayNameFor(m => m.Email)
-
             </th>
             <th>
                 @*Display name from model*@
                 @Html.DisplayNameFor(m => m.PhoneNumber)
-
+            </th>
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.Branch.Name)
             </th>
             <th>
                 Disabled
@@ -57,6 +58,9 @@
                 @Html.DisplayFor(m => item.PhoneNumber)
             </td>
             <td>
+                @Html.DisplayFor(m => item.Branch.Name)
+            </td>
+            <td>
                 @if (item.LockoutEnd != null && item.LockoutEnd > DateTime.Now)
                 {
                     <label>Disabled</label>
@@ -73,9 +77,7 @@
                         <i class="fas fa-trash-alt"></i>
                     </a>
                 }
-
             </td>
-            
 
 
         </tr>

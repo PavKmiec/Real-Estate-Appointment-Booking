@@ -8,6 +8,7 @@ using BookingWebsite.Models;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
@@ -29,7 +30,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(_db.ApplicationUser.ToList());
+            return View(_db.ApplicationUser.Include(u=>u.Branch).ToList());
         }
 
 

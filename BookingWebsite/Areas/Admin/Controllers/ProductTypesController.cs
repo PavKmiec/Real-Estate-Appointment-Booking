@@ -32,7 +32,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
         {
             _db = db;
         }
-        
+
+        [Authorize(Roles = SD.SellerEndUser)]
         public IActionResult Index()
         {
             

@@ -4,14 +4,16 @@ using BookingWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190601060704_movedCustAndEmplClassesIntoOneAppUser")]
+    partial class movedCustAndEmplClassesIntoOneAppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,11 +52,9 @@ namespace BookingWebsite.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Location")
-                        .IsRequired();
+                    b.Property<string>("Location");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -66,8 +66,6 @@ namespace BookingWebsite.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ApplicationUserId");
 
                     b.Property<bool>("Available");
 
@@ -83,11 +81,7 @@ namespace BookingWebsite.Data.Migrations
 
                     b.Property<int>("TagsId");
 
-                    b.Property<int?>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -313,7 +307,7 @@ namespace BookingWebsite.Data.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<int?>("BranchId");
+                    b.Property<int>("BranchId");
 
                     b.Property<string>("City")
                         .IsRequired();
@@ -346,10 +340,6 @@ namespace BookingWebsite.Data.Migrations
 
             modelBuilder.Entity("BookingWebsite.Models.Products", b =>
                 {
-                    b.HasOne("BookingWebsite.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Products")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("BookingWebsite.Models.ProductTypes", "ProductTypes")
                         .WithMany()
                         .HasForeignKey("ProductTypeId")
@@ -421,9 +411,10 @@ namespace BookingWebsite.Data.Migrations
 
             modelBuilder.Entity("BookingWebsite.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("BookingWebsite.Models.Branch", "Branch")
-                        .WithMany("ApplicationUser")
-                        .HasForeignKey("BranchId");
+                    b.HasOne("BookingWebsite.Models.Branch", "Branches")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

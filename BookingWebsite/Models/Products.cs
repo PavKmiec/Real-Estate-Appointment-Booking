@@ -49,5 +49,13 @@ namespace BookingWebsite.Models
         /// </summary>
         [ForeignKey("TagsId")]
         public virtual Tags Tags { get; set; }
+
+
+
+        /// <summary>
+        /// Linking product with user - for sellers to have products
+        /// </summary>
+        public int? UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

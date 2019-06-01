@@ -1,5 +1,6 @@
 ﻿@model BookingWebsite.Models.ViewModel.ProductsViewModel
 @using BookingWebsite.Extensions
+@using BookingWebsite.Utility
 @{
     ViewData["Title"] = "Create";
 }
@@ -7,6 +8,16 @@
 <br />
 
 <h2 class="text-info">Create Product</h2>
+
+@if (User.IsInRole(SD.SellerEndUser) && TempData.ContainsKey("Added"))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Done!</strong> @TempData["Added"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 
 <form method="post" enctype="multipart/form-data">
     <div class="p-4 border rounded">

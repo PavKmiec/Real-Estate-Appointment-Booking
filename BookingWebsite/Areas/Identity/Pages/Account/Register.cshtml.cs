@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using BookingWebsite.Models;
+using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -79,8 +80,13 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
             [Display(Name ="Phone Number")]
             public string PhoneNumber { get; set; }
 
-            [Display(Name = "Super Admin")]
-            public bool IsSuperAdmin { get; set; }
+            //[Display(Name = "Super Admin")]
+            //public bool IsSuperAdmin { get; set; }
+
+           
+
+
+
         }
 
         public void OnGet(string returnUrl = null)
@@ -97,16 +103,19 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 // registration model modification to suit our model
-                var user = new ApplicationUser { UserName = Input.Email,
+                var user = new ApplicationUser
+                {
+                    UserName = Input.Email,
                     Email = Input.Email,
                     Name = Input.Name,
                     PhoneNumber = Input.PhoneNumber,
                     StreetAddress = Input.StreetAddress,
                     City = Input.City,
                     PostCode = Input.PostCode,
-                    
 
-                    
+
+
+
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

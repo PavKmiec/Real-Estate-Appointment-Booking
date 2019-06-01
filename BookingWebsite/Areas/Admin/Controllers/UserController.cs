@@ -4,12 +4,15 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BookingWebsite.Data;
+using BookingWebsite.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.SuperAdminEndUser)]
     public class UserController : Controller
     {
 
@@ -60,6 +63,68 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
+        }
+
+        /// <summary>
+        /// Lock user account 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Lock(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // get application user
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+
+            // set lockout end to 25 years
+            applicationUser.LockoutEnd = DateTime.Now.AddYears(25);
+
+            // save changes to DB
+            await _db.SaveChangesAsync();
+
+            // redirect to index
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+        /// <summary>
+        /// Unlock user account
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> UnLock(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // get application user
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+
+            // set lockout end to now
+            applicationUser.LockoutEnd = DateTime.Now;
+
+            // save changes to DB
+            await _db.SaveChangesAsync();
+
+            // redirect to index
+            return RedirectToAction(nameof(Index));
         }
 
     }

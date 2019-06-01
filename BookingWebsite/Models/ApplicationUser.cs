@@ -13,15 +13,37 @@ namespace BookingWebsite.Models
 
 
 
-        
+
+        [Required]
+        [StringLength(60)]
         public string Name { get; set; }
+        [Required]
+        [Display(Name = " Address")]
         public string StreetAddress { get; set; }
+        [Required]
         public string City { get; set; }
+        [Required]
+        [Display(Name = "Post Code")]
         public string PostCode { get; set; }
 
+        /// <summary>
+        /// Employee properties - because we use one table for all users those can be null in case user is not employee
+        /// </summary>
+        [Display(Name = "Pay Grade")]
+        public string Grade { get; set; }
 
 
-        [NotMapped]
-        public bool IsSuperAdmin { get; set; }
+
+        public int? BranchId { get; set; }
+        public Branch Branch { get; set; }
+
+
+
+        public ICollection<Products> Products { get; set; }
+
+
+
+        //[NotMapped]
+        //public bool IsSuperAdmin { get; set; }
     }
 }

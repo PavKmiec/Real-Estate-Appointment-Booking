@@ -7,23 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookingWebsite.Data;
 using BookingWebsite.Models;
+using BookingWebsite.Utility;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.SuperAdminEndUser)]
     public class BranchesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public BranchesController(ApplicationDbContext context)
+        public BranchesController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
-        // GET: Admin/Branches
+        /// GET: Admin/Branches - retrieve from db and pass i to view
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Branches.ToListAsync());
+
+            return View(await _db.Branches.ToListAsync());
         }
 
         // GET: Admin/Branches/Details/5
@@ -34,7 +38,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branches
+            var branch = await _db.Branches
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (branch == null)
             {
@@ -59,8 +63,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(branch);
-                await _context.SaveChangesAsync();
+                _db.Add(branch);
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(branch);
@@ -74,7 +78,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branches.FindAsync(id);
+            var branch = await _db.Branches.FindAsync(id);
             if (branch == null)
             {
                 return NotFound();
@@ -98,8 +102,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(branch);
-                    await _context.SaveChangesAsync();
+                    _db.Update(branch);
+                    await _db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,7 +129,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branches
+            var branch = await _db.Branches
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (branch == null)
             {
@@ -140,15 +144,15 @@ namespace BookingWebsite.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var branch = await _context.Branches.FindAsync(id);
-            _context.Branches.Remove(branch);
-            await _context.SaveChangesAsync();
+            var branch = await _db.Branches.FindAsync(id);
+            _db.Branches.Remove(branch);
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BranchExists(int id)
         {
-            return _context.Branches.Any(e => e.Id == id);
+            return _db.Branches.Any(e => e.Id == id);
         }
     }
 }

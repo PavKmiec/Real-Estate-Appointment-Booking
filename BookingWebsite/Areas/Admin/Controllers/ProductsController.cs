@@ -21,7 +21,7 @@ using OfficeOpenXml.Style;
 
 namespace BookingWebsite.Controllers
 {
-    [Authorize(Roles = SD.SuperAdminEndUser)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.SellerEndUser + "," + SD.Employee)]
     [Area("Admin")]
     public class ProductsController : Controller
     {
@@ -55,11 +55,17 @@ namespace BookingWebsite.Controllers
 
         }
 
-        
         public async Task<IActionResult> Index()  
         {
 
 
+            // if user is seller redirect to create
+
+            if (User.IsInRole(SD.SellerEndUser))
+            {
+                return RedirectToAction("Create");
+
+            }
             // return list of products
             var products = _db.Products.Include(m => m.ProductTypes).Include(m => m.Tags);
             return View(await products.ToListAsync());
@@ -135,14 +141,38 @@ namespace BookingWebsite.Controllers
                 productsFromDb.Image = @"\" + SD.ImageFolder + @"\" + ProductsVM.Products.Id + ".png";
             }
 
+            
+
             await _db.SaveChangesAsync();
+
+            // if user is a redirect to payment
+            //if (User.IsInRole(SD.SellerEndUser))
+            //{
+            //    // fee 1 %
+            //    double fee = 0.01 * ProductsVM.Products.Price;
+            //    return View("SellerConfirmAdd", fee);
+            //    return RedirectToAction(Payment);
+
+
+            //    //TODO, calculate 1% of the price and redirect to payment passing the value in
+            //}
+
+            if (User.IsInRole(SD.SellerEndUser))
+            {
+                TempData.Add("Added", " You have successfully Added a Property to our system, one of our advisers will contact you to arrange a payment. Thank you");
+            }
+        
             return RedirectToAction(nameof(Index));
 
         }
 
 
+
+
+
         // GET : Edit
         //  passing id parameter of the product that user wants to edit
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -173,6 +203,7 @@ namespace BookingWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> Edit(int id) // Because we have already binded Products View Model we do not have to pass it as a parameter
         {
             if (ModelState.IsValid)
@@ -267,6 +298,7 @@ namespace BookingWebsite.Controllers
 
         // GET : Delete
         //  passing id parameter of the product that user wants to delete
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -296,6 +328,7 @@ namespace BookingWebsite.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             string webRootPath = _hostingEnvironment.WebRootPath;
@@ -325,7 +358,7 @@ namespace BookingWebsite.Controllers
         }
 
 
-
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public void ProdListDownload()
         {
             var productDW = from a in _db.Products.Include(a=>a.ProductTypes)
@@ -416,11 +449,6 @@ namespace BookingWebsite.Controllers
                     excel.SaveAs(memoryStream);
                     memoryStream.WriteTo(Response.Body);
                 }
-
-
-
-
-
 
             }
 
