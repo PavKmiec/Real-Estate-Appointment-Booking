@@ -42,6 +42,7 @@ namespace BookingWebsite.Data
 
 
         // Customer
+        public  DbSet<Customer> Customers { get; set; }
 
 
 

@@ -103,7 +103,10 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
                     PhoneNumber = Input.PhoneNumber,
                     StreetAddress = Input.StreetAddress,
                     City = Input.City,
-                    PostCode = Input.PostCode
+                    PostCode = Input.PostCode,
+                    
+
+                    
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
@@ -156,6 +159,7 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
                             if (role == SD.SellerEndUser)
                             {
                                 await _userManager.AddToRoleAsync(user, SD.SellerEndUser);
+                                
 
                             }
                             // here we also make sure that only customer user is logged in automatically - to prevent logging-in when admin creates employees 
