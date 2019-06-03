@@ -4,11 +4,8 @@
 @{
     ViewData["Title"] = "Create";
 }
-
 <br />
-
 <h2 class="text-info">Create Product</h2>
-
 @if (User.IsInRole(SD.SellerEndUser) && TempData.ContainsKey("Added"))
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -18,7 +15,6 @@
         </button>
     </div>
 }
-
 <form method="post" enctype="multipart/form-data">
     <div class="p-4 border rounded">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -30,7 +26,6 @@
                 <input asp-for="Products.Name" class="form-control" />
             </div>
             <span asp-validation-for="Products.Name" class="text-danger"></span>
-
         </div>
         <div class="form-group row">
             <div class="col-2">
@@ -40,7 +35,15 @@
                 <input asp-for="Products.Price" class="form-control" />
             </div>
             <span asp-validation-for="Products.Price" class="text-danger"></span>
-
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="Products.Description"></label>
+            </div>
+            <div class="col-5">
+                @Html.TextAreaFor(m => m.Products.Description)
+            </div>
+            <span asp-validation-for="Products.Description" class="text-danger"></span>
         </div>
         <div class="form-group row">
             <div class="col-2">
@@ -49,7 +52,6 @@
             <div class="col-5">
                 <input type="file" name="files" class="form-control" />
             </div>
-
         </div>
         <div class="form-group row">
             <div class="col-2">
@@ -65,7 +67,6 @@
             </div>
             <div class="col-5">
                 <select asp-for="@Model.Products.TagsId" asp-items="Model.Tags.ToSelectListItem(Model.Products.TagsId)" class="form-control"></select>
-
             </div>
         </div>
         <div class="form-group row">
@@ -76,7 +77,6 @@
                 <input asp-for="Products.FurnishDetail" class="form-control" />
             </div>
             <span asp-validation-for="Products.FurnishDetail" class="text-danger"></span>
-
         </div>
         <div class="form-group row">
             <div class="col-2">
@@ -86,7 +86,6 @@
                 <input type="checkbox" asp-for="Products.Available" />
             </div>
         </div>
-
         <br />
         <div class="form-group">
             <input type="submit" class="btn btn-primary" value="Create" />
@@ -95,14 +94,19 @@
     </div>
 
 </form>
-
 @*asp.net has already defined javascript for validation that we have added above in "asp-validation-summary" it is located in partial view
     _ValidationPartialScript and we can just use that here *@
-
 @section Scripts
     {
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'lists',
+            menubar: 'file edit format'
+
+        });
+    </script>
     @*Including partial view*@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 }
-

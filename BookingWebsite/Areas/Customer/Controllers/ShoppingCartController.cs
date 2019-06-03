@@ -9,6 +9,7 @@ using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using BookingWebsite.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +49,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
         // Get Index for Shopping Cart
         // we need to retrive cart items that are in the session 
         // besed on those Id's we need to populate ViewModel
-
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             // get session items
@@ -66,7 +67,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
             // once we loaded products we will pass the model to the View
             return View(ShoppingCartVM);
         }
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Index")]
@@ -116,10 +117,10 @@ namespace BookingWebsite.Areas.Customer.Controllers
             }
 
 
-            //// email TODO - This is working ok but enabe it when login is required is implemented 
-            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
-            //    "Open Properties - Your Appointment",
-            //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+            //// email 
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+                "Open Properties - Your Appointment",
+                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
 
             Debug.WriteLine("Email Reached");
 
@@ -136,6 +137,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
 
 
         // remove item from basket action
+        [Authorize]
         public IActionResult Remove(int id)
         {
 
@@ -160,7 +162,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
         }
         //GET
         // Appointment confirmation controller / passing appointment id as parameter
-
+        [Authorize]
         public async Task<IActionResult> AppointmentConfirmation(int id)
         {
 

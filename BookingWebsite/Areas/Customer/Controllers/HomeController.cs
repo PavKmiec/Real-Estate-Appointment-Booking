@@ -8,6 +8,7 @@ using BookingWebsite.Data;
 using BookingWebsite.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using BookingWebsite.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -49,6 +50,7 @@ namespace BookingWebsite.Controllers
 
         [HttpPost, ActionName("Details")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DetailsPost(int id)
         {
             // check if anything exist in session

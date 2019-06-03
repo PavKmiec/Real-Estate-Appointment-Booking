@@ -21,6 +21,9 @@ namespace BookingWebsite.Models
 
         public string Image { get; set; }
 
+        public string Description { get; set; }
+        // TODO add this to all views too
+
 
         // full;part;no
         public string FurnishDetail { get; set; }

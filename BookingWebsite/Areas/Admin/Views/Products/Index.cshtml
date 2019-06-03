@@ -7,17 +7,17 @@
 
 
 
-      <div class="row">
-          <div class="col-6">
-              <h2 class="text-info">Property List</h2>
-          </div>
-          <div class="col-6 text-right">
-              <a asp-action="Create" class="btn btn-info"><i class="fas fa-plus"></i>&nbsp; New Property</a>
-              <a asp-action="ProdListDownload" asp-controller="Products" class="btn btn-info">Download Product List</a>
-          </div>
-          
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Property List</h2>
+    </div>
+    <div class="col-6 text-right">
+        <a asp-action="Create" class="btn btn-info"><i class="fas fa-plus"></i>&nbsp; New Property</a>
+        <a asp-action="ProdListDownload" asp-controller="Products" class="btn btn-info">Download Product List</a>
+    </div>
 
-      </div>
+
+</div>
 <br />
 <div>
     <table class="table table-striped">
@@ -39,6 +39,11 @@
             </th>
             <th>
                 @*Display name from model*@
+                @Html.DisplayNameFor(m => m.Description)
+
+            </th>
+            <th>
+                @*Display name from model*@
                 @Html.DisplayNameFor(m => m.ProductTypes)
 
             </th>
@@ -53,32 +58,35 @@
         @*Using for each to retrieve list from database*@
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(m => item.Name)
-            </td>
-            <td>
-                @String.Format("{0:C}", item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.Available)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.ProductTypes.Name)
-            </td>
-            <td>
-                @if(!item.Tags.Name.Equals("--None--"))
-                {
-                @Html.DisplayFor(m => item.Tags.Name)
-                }
-            </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.Name)
+                </td>
+                <td>
+                    @String.Format("{0:C}", item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Available)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.ProductTypes.Name)
+                </td>
+                <td>
+                    @if (!item.Tags.Name.Equals("--None--"))
+                    {
+                        @Html.DisplayFor(m => item.Tags.Name)
+                    }
+                </td>
 
-            <td>
-                <partial name="_TableButtonPartial" model="item.Id" />
-            </td>
+                <td>
+                    <partial name="_TableButtonPartial" model="item.Id" />
+                </td>
 
 
-        </tr>
+            </tr>
         }
 
     </table>

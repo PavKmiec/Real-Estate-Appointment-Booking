@@ -26,7 +26,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
     /// Appointments Controller 
     /// </summary>
     /// Authorization for users specified in SD utility class
-    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
     [Area("Admin")]
     public class AppointmentsController : Controller
     {
@@ -49,6 +49,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         //GET Edit action method
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int? id)
         {
 
@@ -87,6 +88,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int id, AppointmentDetailsViewModel objAppointmentVM)
         {
 
@@ -151,6 +153,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// productPage set 1 as default: if not parameter is passed it will load first page
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public async Task<IActionResult> Index(int productPage=1, string searchName=null, string searchEmail=null, string searchPhone=null, string searchDate=null)
         {
             // to identify what is the current user we wil use the security claims principal
@@ -300,6 +303,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         //GET Details action method
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
 
@@ -342,6 +346,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         //GET Delete action method
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -386,6 +391,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> DtleteConfirmed(int id)
         {
 
@@ -398,7 +404,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
 
-
+        [Authorize]
         public async Task<IActionResult> AppList()
         {
             var appList = _db.Appointments.Include(a => a.SalesPerson); //TODO FIX THIS

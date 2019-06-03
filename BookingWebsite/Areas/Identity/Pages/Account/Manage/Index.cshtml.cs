@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using BookingWebsite.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,9 @@ namespace BookingWebsite.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
+
+  
+
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -20,11 +24,13 @@ namespace BookingWebsite.Areas.Identity.Pages.Account.Manage
         public IndexModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+           
+
         }
 
         public string Username { get; set; }
@@ -46,6 +52,19 @@ namespace BookingWebsite.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+
+            // additional property for registration
+            [Required]
+            public string Name { get; set; }
+
+            [Display(Name = "Street Address")]
+            public string StreetAddress { get; set; }
+
+            public string City { get; set; }
+
+            [Display(Name = "Post Code")]
+            public string PostCode { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -59,6 +78,7 @@ namespace BookingWebsite.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            
 
             Username = userName;
 

@@ -37,7 +37,14 @@ namespace BookingWebsite.Data
         public DbSet<Branch> Branches { get; set; }
 
 
-        
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+
+
+        public DbSet<OrderDetails> OrderDetailses { get; set; }
+
+
+
+
 
 
 

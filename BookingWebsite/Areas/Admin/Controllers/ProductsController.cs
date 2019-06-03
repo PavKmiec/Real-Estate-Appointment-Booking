@@ -256,6 +256,7 @@ namespace BookingWebsite.Controllers
                 productsFromDb.TagsId = ProductsVM.Products.TagsId;
                 productsFromDb.FurnishDetail = ProductsVM.Products.FurnishDetail;
                 productsFromDb.Available = ProductsVM.Products.Available;
+                productsFromDb.Description = ProductsVM.Products.Description;
                 // save
                 await _db.SaveChangesAsync();
 

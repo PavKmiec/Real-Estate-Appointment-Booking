@@ -4,14 +4,16 @@ using BookingWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190601151344_AddedDescriptionPropertyToProduct")]
+    partial class AddedDescriptionPropertyToProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,61 +61,6 @@ namespace BookingWebsite.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Branches");
-                });
-
-            modelBuilder.Entity("BookingWebsite.Models.OrderDetails", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("OrderId");
-
-                    b.Property<double>("Price");
-
-                    b.Property<int>("ProductsId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("OrderDetailses");
-                });
-
-            modelBuilder.Entity("BookingWebsite.Models.OrderHeader", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("AppointmentDate");
-
-                    b.Property<string>("ContactPhone");
-
-                    b.Property<DateTime>("OrderDate");
-
-                    b.Property<double>("OrderTotal");
-
-                    b.Property<string>("PaymentStatus");
-
-                    b.Property<string>("Status");
-
-                    b.Property<string>("TransactionId");
-
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("OrderHeaders");
                 });
 
             modelBuilder.Entity("BookingWebsite.Models.Products", b =>
@@ -399,27 +346,6 @@ namespace BookingWebsite.Data.Migrations
                     b.HasOne("BookingWebsite.Models.ApplicationUser", "SalesPerson")
                         .WithMany()
                         .HasForeignKey("SalesPersonId");
-                });
-
-            modelBuilder.Entity("BookingWebsite.Models.OrderDetails", b =>
-                {
-                    b.HasOne("BookingWebsite.Models.OrderHeader", "OrderHeader")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("BookingWebsite.Models.Products", "Products")
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("BookingWebsite.Models.OrderHeader", b =>
-                {
-                    b.HasOne("BookingWebsite.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BookingWebsite.Models.Products", b =>

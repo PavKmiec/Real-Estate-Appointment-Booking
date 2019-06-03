@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
-    [Authorize(Roles = SD.SuperAdminEndUser)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
     [Area("Admin")]
     public class ProductTypesController : Controller
     {
@@ -33,7 +33,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
             _db = db;
         }
 
-        [Authorize(Roles = SD.SellerEndUser)]
+        //[Authorize(Roles = SD.SellerEndUser + "," + SD.SuperAdminEndUser)]
         public IActionResult Index()
         {
             

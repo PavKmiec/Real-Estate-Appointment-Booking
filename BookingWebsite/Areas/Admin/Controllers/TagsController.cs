@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
-    [Authorize(Roles = SD.SuperAdminEndUser)]
+    [Authorize(Roles = SD.SuperAdminEndUser + "," + SD.AdminEndUser)]
     [Area("Admin")]
     public class TagsController : Controller
     {
