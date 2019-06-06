@@ -12,20 +12,25 @@ namespace BookingWebsite.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public double Price { get; set; }
 
 
         public bool Available { get; set; }
 
+
         public string Image { get; set; }
 
+        [Required]
         public string Description { get; set; }
         // TODO add this to all views too
 
 
         // full;part;no
+        [Required]
         public string FurnishDetail { get; set; }
 
 

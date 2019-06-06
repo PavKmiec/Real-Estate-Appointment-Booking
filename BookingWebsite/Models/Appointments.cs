@@ -33,28 +33,33 @@ namespace BookingWebsite.Models
         /// <summary>
         /// Appointment date
         /// </summary>
+        [Required]
         public DateTime AppointmentDate { get; set; }
 
         /// <summary>
         /// Appointment Time - we do not need tis in database as we can use "Date" property to store time too in our DB
         /// </summary>
         [NotMapped]
+        [Required]
         public DateTime AppointmentTime { get; set; }
 
 
         /// <summary>
         /// Customer name
         /// </summary>
+        [Required]
         public string CustomerName { get; set; }
 
         /// <summary>
         /// Customer phone
         /// </summary>
+        [Required]
         public string CustomerPhoneNumber { get; set; }
 
         /// <summary>
         /// customer email
         /// </summary>
+        [Required]
         public string CustomerEmail { get; set; }
 
         /// <summary>

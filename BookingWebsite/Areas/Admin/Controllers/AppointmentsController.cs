@@ -256,14 +256,14 @@ namespace BookingWebsite.Areas.Admin.Controllers
             }
 
 
-            // enabling customer to see their appointments //TODO fix this !!!
-            //if (User.IsInRole(SD.CustomerEndUser))
-            //{
-            //    appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
-            //    //Debug.WriteLine("Claim Value is: " + claimEmail);
-            //    //Debug.WriteLine("Sales Person Id is:  "+ appointmentVM.Appointments.Select(a=>a.CustomerEmail));
+            //enabling customer to see their appointments //TODO fix this !!!
+            if (User.IsInRole(SD.CustomerEndUser))
+            {
+                appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
+                //Debug.WriteLine("Claim Value is: " + claimEmail);
+                //Debug.WriteLine("Sales Person Id is:  "+ appointmentVM.Appointments.Select(a=>a.CustomerEmail));
 
-            //}
+            }
 
             //_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault()
 
