@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,11 +15,14 @@ using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
+
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
@@ -26,13 +30,14 @@ namespace BookingWebsite.Areas.Admin.Controllers
     /// Appointments Controller 
     /// </summary>
     /// Authorization for users specified in SD utility class
-    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee + "," + SD.CustomerEndUser)]
     [Area("Admin")]
     public class AppointmentsController : Controller
     {
 
         // we need db (dependency injection)
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         //define page size - number per page
         private int PageSize = 3; //TODO change this after seed to larger number
@@ -40,9 +45,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// <summary>
         /// constructor
         /// </summary>
-        public AppointmentsController(ApplicationDbContext dbContext)
+        public AppointmentsController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
         {
             _db = dbContext;
+            _userManager = userManager;
         }
 
 
@@ -69,12 +75,32 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 select p).Include("ProductTypes");
 
 
+            // getting only employees from Application users to only aloow staff to be assigned to appointmants
+            var users = new List<ApplicationUser>();
+
+
+
+            users.AddRange((from u in _db.ApplicationUser
+                join ur in _db.UserRoles on u.Id equals ur.UserId
+                join r in _db.Roles on ur.RoleId equals r.Id
+                where r.Name.Equals(SD.Employee + "," + SD.AdminEndUser)
+                select new ApplicationUser
+                {
+                    Name = u.Name,
+                    Id = u.Id,
+                    Email = u.Email,
+                    PhoneNumber = u.PhoneNumber,
+                    City = u.City,
+
+
+                }).ToList());
+
             // We need new AppointmentsViewModel and to populate with specific appointment data 
             AppointmentDetailsViewModel objAppointmentVM = new AppointmentDetailsViewModel()
             {
 
                 Appointment = _db.Appointments.Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault(),
-                SalesPerson = _db.ApplicationUser.ToList(),
+                SalesPerson = users.ToList(),
                 Products = productList.ToList()
 
             };
@@ -124,9 +150,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 {
                     // update Sales Person
                     appointmentFromDb.SalesPersonId = objAppointmentVM.Appointment.SalesPersonId;
+                    //Debug.WriteLine(appointmentFromDb.SalesPerson.Name);
 
                 }
                 // save
+
                 await _db.SaveChangesAsync();
 
 
@@ -153,11 +181,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// productPage set 1 as default: if not parameter is passed it will load first page
         /// </summary>
         /// <returns></returns>
-        [Authorize]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee + "," + SD.CustomerEndUser)]
         public async Task<IActionResult> Index(int productPage=1, string searchName=null, string searchEmail=null, string searchPhone=null, string searchDate=null)
         {
             // to identify what is the current user we wil use the security claims principal
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            
 
             // store in var; claims identity = convert to (claimsIdentity) 
             var claimsIdentity = (ClaimsIdentity) this.User.Identity;
@@ -165,11 +193,19 @@ namespace BookingWebsite.Areas.Admin.Controllers
             // get claim value - having this we can retrieve used id by claim.value - this is easier in .net but in .net core this is the way to do this
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
+
+            var claimEmail = claimsIdentity.FindFirst(ClaimTypes.Email).Value;
+
             // new VM, with list of appointments - initialization
             AppointmentViewModel appointmentVM = new AppointmentViewModel()
             {
-                Appointments = new List<Appointments>()
+                Appointments = new List<Appointments>(),
+
             };
+
+
+            
+
 
 
             // url creation
@@ -206,20 +242,31 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-
-
+            //var userId = _userManager.GetUserId(HttpContext.User);
 
             appointmentVM.Appointments = _db.Appointments.Include(a => a.SalesPerson).ToList();
 
             // check if the role of logged in user is admin or super admin (Admin = Sales Person)
             // if Sales person then only their own appointments are visible to them
-            if (User.IsInRole(SD.AdminEndUser))
+            if (User.IsInRole(SD.Employee))
             {
                 // this is where we use the above created claim to retrieve user ID // 
                 appointmentVM.Appointments =
                     appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
             }
-            
+
+
+            // enabling customer to see their appointments //TODO fix this !!!
+            //if (User.IsInRole(SD.CustomerEndUser))
+            //{
+            //    appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
+            //    //Debug.WriteLine("Claim Value is: " + claimEmail);
+            //    //Debug.WriteLine("Sales Person Id is:  "+ appointmentVM.Appointments.Select(a=>a.CustomerEmail));
+
+            //}
+
+            //_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault()
+
 
             // filter criteria
             if (searchName != null)

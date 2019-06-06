@@ -7,6 +7,7 @@ using BookingWebsite.Data;
 using BookingWebsite.Models;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,10 +20,13 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         private readonly ApplicationDbContext _db;
 
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminUsersController(ApplicationDbContext db)
+
+        public AdminUsersController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
 
 
         }      
@@ -30,7 +34,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(_db.ApplicationUser.Include(u=>u.Branch).ToList());
+
+
+            return View(_db.ApplicationUser.Include(u => u.Branch).ToList());
+
+            //_db.ApplicationUser.Include(u => u.Branch).ToList()
         }
 
 

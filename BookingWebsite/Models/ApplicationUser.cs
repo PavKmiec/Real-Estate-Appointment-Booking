@@ -42,6 +42,20 @@ namespace BookingWebsite.Models
         public ICollection<Products> Products { get; set; }
 
 
+        [Display(Name = "Appointment")]
+        public int? AppointmentId { get; set; }
+
+
+        /// <summary>
+        /// Linking ProductTypes to ProductTypeId as foreign key
+        /// </summary>
+        [ForeignKey("AppointmentId")]
+        public virtual Appointments Appointments { get; set; }
+
+
+
+
+
 
         //[NotMapped]
         //public bool IsSuperAdmin { get; set; }

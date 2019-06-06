@@ -4,14 +4,16 @@ using BookingWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingWebsite.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190605012505_addedAppoitmentToAppUser")]
+    partial class addedAppoitmentToAppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,7 +372,7 @@ namespace BookingWebsite.Data.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<int?>("AppointmentId");
+                    b.Property<int>("AppointmentId");
 
                     b.Property<int?>("BranchId");
 
@@ -505,7 +507,8 @@ namespace BookingWebsite.Data.Migrations
                 {
                     b.HasOne("BookingWebsite.Models.Appointments", "Appointments")
                         .WithMany()
-                        .HasForeignKey("AppointmentId");
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BookingWebsite.Models.Branch", "Branch")
                         .WithMany("ApplicationUser")

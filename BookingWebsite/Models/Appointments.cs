@@ -29,6 +29,7 @@ namespace BookingWebsite.Models
         [ForeignKey("SalesPersonId")]
         public virtual ApplicationUser SalesPerson { get; set; }
 
+
         /// <summary>
         /// Appointment date
         /// </summary>
@@ -61,6 +62,8 @@ namespace BookingWebsite.Models
         /// </summary>
         public bool isConfirmed { get; set; }
 
+
+        
 
 
     }

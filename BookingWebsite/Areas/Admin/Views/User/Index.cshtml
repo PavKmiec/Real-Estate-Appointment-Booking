@@ -38,41 +38,57 @@
                 @Html.DisplayNameFor(m => m.PhoneNumber)
 
             </th>
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.City)
+
+            </th>
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.Email)
+
+            </th>
             <th></th>
             <th></th>
         </tr>
         @*Using for each to retrieve list from database*@
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(m => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.PhoneNumber)
-                </td>
+        <tr>
+            <td>
+                @Html.DisplayFor(m => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.Email)
+            </td>
 
-                <td>
-                    @*Check if user is locked or not and display apropirate button / function to lock or unlock*@
-                    @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
-                    {
-                        <a class="btn btn-success text-white" asp-action="Lock" asp-route-id="@item.Id"><i class="fas fa-lock-open"></i> </a>
+            <td>
+                @*Check if user is locked or not and display apropirate button / function to lock or unlock*@
+                @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
+                {
+                    <a class="btn btn-success text-white" asp-action="Lock" asp-route-id="@item.Id"><i class="fas fa-lock-open"></i> </a>
 
-                    }
-                    else
-                    {
-                        <a class="btn btn-danger text-white" asp-action="UnLock" asp-route-id="@item.Id"><i class="fas fa-lock"></i> </a>
-                    }
+                }
+                else
+                {
+                    <a class="btn btn-danger text-white" asp-action="UnLock" asp-route-id="@item.Id"><i class="fas fa-lock"></i> </a>
+                }
 
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="fas fa-trash-alt"></i></a>
-                    @*<partial name="_TableButtonPartial" model="item.Id" />*@ @*- CRUD TODO*@
-                </td>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="fas fa-trash-alt"></i></a>
+                @*<partial name="_TableButtonPartial" model="item.Id" />*@ @*- CRUD TODO*@
+            </td>
 
 
-            </tr>
+        </tr>
         }
 
     </table>

@@ -54,7 +54,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
         {
             // get session items
             List<int> lstShoppingCart = HttpContext.Session.Get<List<int>>("ssShoppingCart");
-            if (lstShoppingCart.Count>0)
+            if (lstShoppingCart != null && lstShoppingCart.Count>0)
             {
                 // build complete list of products so we can use that in Shopping Cart View
                 foreach (int cartItem in lstShoppingCart)
@@ -118,9 +118,9 @@ namespace BookingWebsite.Areas.Customer.Controllers
 
 
             //// email 
-            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
-                "Open Properties - Your Appointment",
-                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
 
             Debug.WriteLine("Email Reached");
 
