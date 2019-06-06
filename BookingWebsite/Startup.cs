@@ -53,7 +53,7 @@ namespace BookingWebsite
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
 
-
+            services.AddScoped<IDbInitializer, DbInitializer>(); // Add Db Initialize to our services
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddSessionStateTempDataProvider(); //TODO THIS! (enables bootstrap warning box via tempData)
@@ -69,7 +69,7 @@ namespace BookingWebsite
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDbInitializer dbInitializer)
         {
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -95,6 +95,7 @@ namespace BookingWebsite
 
             
             // added sessions 
+            dbInitializer.Initialize();
             app.UseSession();
             app.UseMvc(routes =>
             {

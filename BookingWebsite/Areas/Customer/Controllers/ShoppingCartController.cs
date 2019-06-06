@@ -117,10 +117,10 @@ namespace BookingWebsite.Areas.Customer.Controllers
             }
 
 
-            //// email 
-            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
-                "Open Properties - Your Appointment",
-                "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
+            //// email  - Commented out in order not to spam during testing //TODO uncomment for production
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
 
             Debug.WriteLine("Email Reached");
 

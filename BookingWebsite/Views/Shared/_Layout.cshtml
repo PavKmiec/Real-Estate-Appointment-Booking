@@ -56,15 +56,17 @@
             <li class="nav-item"><a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">My Appointments</a></li>
             <li class="nav-item"><a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Help</a></li>
             <li class="nav-item"><a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Contact Us</a></li>
-            <li class="nav-item"><a class="nav-link dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="True" aria-expanded="False">Managment
+            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="True" aria-expanded="False">Managment
             </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
                     <a class="dropdown-item"></a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Appointments" asp-action="Index">Appointments</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">Properties</a>
+
                     <a class="dropdown-item" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">Property Types</a>
                     <a class="dropdown-item" asp-area="Admin" asp-controller="Tags" asp-action="Index">Property Tags</a>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Products" asp-action="Index">Property</a>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index">Admin Users</a>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Admin Users</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index">Users</a>
                     <a class="dropdown-item" asp-area="Admin" asp-controller="Branches" asp-action="Index">Branches</a>
 
 
@@ -72,28 +74,6 @@
                 </div>
             
                 </li>
-
-
-            @* Display only if authorized *@
-            @if (User.IsInRole(SD.SuperAdminEndUser) || User.IsInRole(SD.SuperAdminEndUser) || User.IsInRole(SD.Employee))
-            {
-
-
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">Property Types</a></li>
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Tags" asp-action="Index">Property Tags</a></li>
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Property</a></li>
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index">Admin Users</a></li>
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a></li>
-
-            }
-
-
-            @if (User.IsInRole(SD.SuperAdminEndUser) || User.IsInRole(SD.SuperAdminEndUser) || User.IsInRole(SD.Employee))
-            {
-                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Appointments" asp-action="Index">Appointments</a></li>
-
-
-            }
 
             @if (HttpContextAccessor.HttpContext.Session.Get<List<int>>("ssShoppingCart") != null)
             {

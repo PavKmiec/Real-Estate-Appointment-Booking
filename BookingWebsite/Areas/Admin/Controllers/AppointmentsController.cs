@@ -69,12 +69,42 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 select p).Include("ProductTypes");
 
 
+
+            // we need to fetch only employees in order to make sure that when manager or admin assigns staff to appointments the list only shows employee users
+            // oh well, this smells like a join query... 
+            
+
+            // first thing first, list application users instance
+            var users = new List<ApplicationUser>();
+
+
+
+            // now the hard part
+            users.AddRange((from user in _db.ApplicationUser
+                join userRole in _db.UserRoles on user.Id equals userRole.UserId
+                join role in _db.Roles on userRole.RoleId equals role.Id
+                where role.Name.Equals(SD.Employee)
+                select new ApplicationUser
+                {
+                    Name = user.Name,
+                    Id = user.Id,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    City = user.City,
+                    StreetAddress = user.StreetAddress,
+                    PostCode = user.PostCode
+
+
+                }).ToList());
+
+
             // We need new AppointmentsViewModel and to populate with specific appointment data 
             AppointmentDetailsViewModel objAppointmentVM = new AppointmentDetailsViewModel()
             {
-
+                
                 Appointment = _db.Appointments.Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault(),
-                SalesPerson = _db.ApplicationUser.ToList(),
+                // this is where we use out filtered list of users from the join query above
+                SalesPerson = users.ToList(),
                 Products = productList.ToList()
 
             };
@@ -120,7 +150,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 appointmentFromDb.isConfirmed = objAppointmentVM.Appointment.isConfirmed;
 
                 // check if admin to enable Sales  Person change / assign
-                if (User.IsInRole(SD.SuperAdminEndUser))
+                if (User.IsInRole(SD.SuperAdminEndUser + "," + SD.AdminEndUser))
                 {
                     // update Sales Person
                     appointmentFromDb.SalesPersonId = objAppointmentVM.Appointment.SalesPersonId;
@@ -207,18 +237,23 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-
-
             appointmentVM.Appointments = _db.Appointments.Include(a => a.SalesPerson).ToList();
 
             // check if the role of logged in user is admin or super admin (Admin = Sales Person)
-            // if Sales person then only their own appointments are visible to them
-            if (User.IsInRole(SD.AdminEndUser))
+            
+            if (User.IsInRole(SD.Employee)) // TODO ,  OK THIS IS WORKING NOW
             {
                 // this is where we use the above created claim to retrieve user ID // 
                 appointmentVM.Appointments =
                     appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
             }
+
+
+
+
+
+
+            // we need to check if 
             
 
             // filter criteria

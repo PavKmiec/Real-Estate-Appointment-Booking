@@ -67,11 +67,14 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
             [Required]
             public string Name { get; set; }
 
+            [Required]
             [Display(Name = "Street Address")]
             public string StreetAddress { get; set; }
 
+            [Required]
             public string City { get; set; }
 
+            [Required]
             [Display(Name = "Post Code")]
             public string PostCode { get; set; }
 
