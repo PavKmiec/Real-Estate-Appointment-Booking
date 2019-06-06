@@ -14,6 +14,7 @@ using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -26,7 +27,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
     /// Appointments Controller 
     /// </summary>
     /// Authorization for users specified in SD utility class
-    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee + "," + SD.CustomerEndUser)]
     [Area("Admin")]
     public class AppointmentsController : Controller
     {
@@ -34,15 +35,20 @@ namespace BookingWebsite.Areas.Admin.Controllers
         // we need db (dependency injection)
         private readonly ApplicationDbContext _db;
 
+        //// TODO userManager that hopefully get me user email for filtering customer appointments, lets see if it works
+
+        private readonly UserManager<IdentityUser> _userManager;
+
         //define page size - number per page
         private int PageSize = 3; //TODO change this after seed to larger number
 
         /// <summary>
         /// constructor
         /// </summary>
-        public AppointmentsController(ApplicationDbContext dbContext)
+        public AppointmentsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
         {
             _db = dbContext;
+            _userManager = userManager;
         }
 
 
@@ -139,7 +145,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     .AddMinutes(objAppointmentVM.Appointment.AppointmentTime.Minute);
 
 
-                // retrive appointment object from DB //TODO see if can single call to FirstOrDefault()
+                // retrive appointment object from DB 
                 var appointmentFromDb = _db.Appointments.Where(a => a.Id == objAppointmentVM.Appointment.Id).FirstOrDefault();
 
                 // upadte fields taken from the view
@@ -187,7 +193,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         public async Task<IActionResult> Index(int productPage=1, string searchName=null, string searchEmail=null, string searchPhone=null, string searchDate=null)
         {
             // to identify what is the current user we wil use the security claims principal
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            System.Security.Claims.ClaimsPrincipal curUser = this.User;
 
             // store in var; claims identity = convert to (claimsIdentity) 
             var claimsIdentity = (ClaimsIdentity) this.User.Identity;
@@ -245,7 +251,27 @@ namespace BookingWebsite.Areas.Admin.Controllers
             {
                 // this is where we use the above created claim to retrieve user ID // 
                 appointmentVM.Appointments =
+                
                     appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
+            }
+
+
+            // TODO , after few tries I'm not sure how to do this, Identity in core confuses me. but lets try anyway, start small an work this out
+            // we need to do the same as we did for employee, customer should be able to view their own appointments
+
+            // get current user
+            var custUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            var userEmail = custUser.Email;
+
+
+            if (User.IsInRole(SD.CustomerEndUser)) //TODO
+            {
+                // this is where we use the above created claim to retrieve user ID // 
+                appointmentVM.Appointments =
+
+                    // TODO  ??? , ok so the problem is that customer is not connected with appointments via regular relationship we have for other entities... 
+                    appointmentVM.Appointments.Where(a => a.CustomerEmail == userEmail).ToList();
             }
 
 
@@ -254,7 +280,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
             // we need to check if 
-            
+
 
             // filter criteria
             if (searchName != null)
@@ -307,7 +333,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
             }
 
-            // count how many appointmats there is after the search criteria
+            // count how many appointments there is after the search criteria
 
             var count = appointmentVM.Appointments.Count(); //TODO check this
 
