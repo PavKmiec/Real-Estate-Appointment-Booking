@@ -15,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingWebsite.Areas.Customer.Controllers
 {
+    /// <summary>
+    /// Shopping Cart Controller
+    /// </summary>
     [Area("Customer")]
     public class ShoppingCartController : Controller
     {
@@ -46,9 +49,10 @@ namespace BookingWebsite.Areas.Customer.Controllers
 
 
         }
-        // Get Index for Shopping Cart
-        // we need to retrive cart items that are in the session 
-        // besed on those Id's we need to populate ViewModel
+        /// <summary>
+        /// Index Action - we need to retrieve cart items that are in the session based on those Id's we need to populate ViewModel
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Index()
         {
@@ -67,6 +71,12 @@ namespace BookingWebsite.Areas.Customer.Controllers
             // once we loaded products we will pass the model to the View
             return View(ShoppingCartVM);
         }
+
+
+        /// <summary>
+        /// Index POST action
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -80,7 +90,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
 
 
 
-            // retrive list of items from session
+            // retrieve list of items from session
             List<int> lstCartItems = HttpContext.Session.Get<List<int>>("ssShoppingCart");
 
             // appointments time and dte
@@ -97,7 +107,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
             _db.Appointments.Add(appointments);
             _db.SaveChanges();
 
-            // once appointment is sved we will get appointment Id which is created
+            // once appointment is saved we will get appointment Id which is created
 
             int appointmentId = appointments.Id;
 
@@ -117,7 +127,8 @@ namespace BookingWebsite.Areas.Customer.Controllers
             }
 
 
-            //// email  - Commented out in order not to spam during testing //TODO uncomment for production
+            // email  - Commented out in order not to spam during testing
+            //TODO this is commented to prevent sending emails during development - uncomment for production - 
             //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
             //    "Open Properties - Your Appointment",
             //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");
@@ -125,7 +136,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
             Debug.WriteLine("Email Reached");
 
             _db.SaveChanges();
-            // emply list cart items
+            // empty list cart items
             lstCartItems = new List<int>();
             // set session
             HttpContext.Session.Set("ssShoppingCart", lstCartItems);
@@ -137,6 +148,11 @@ namespace BookingWebsite.Areas.Customer.Controllers
 
 
         // remove item from basket action
+        /// <summary>
+        /// Remove action method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize]
         public IActionResult Remove(int id)
         {
@@ -160,8 +176,12 @@ namespace BookingWebsite.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
 
         }
-        //GET
-        // Appointment confirmation controller / passing appointment id as parameter
+
+        /// <summary>
+        /// Appointment confirmation / passing appointment id as parameter 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> AppointmentConfirmation(int id)
         {
@@ -186,7 +206,7 @@ namespace BookingWebsite.Areas.Customer.Controllers
                 
             }
 
-            //// email TODO - ADD claims to get current logged in User - ENABLE when login required Implemented
+            //TODO this is commented to prevent sending emails during development - uncomment for production - 
             //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
             //    "Open Properties - Your Appointment",
             //    "Your appointment was submitted successfully, a member of staff will be in touch shortly to confirm your appointment");

@@ -43,8 +43,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
         private int PageSize = 3; //TODO change this after seed to larger number
 
         /// <summary>
-        /// constructor
+        /// Constructor
         /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="userManager"></param>
         public AppointmentsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
         {
             _db = dbContext;
@@ -54,7 +56,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        //GET Edit action method
+        /// <summary>
+        /// GET Edit Action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -85,7 +91,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-            // now the hard part
+            // join query - to make sure we load only employee users
             users.AddRange((from user in _db.ApplicationUser
                 join userRole in _db.UserRoles on user.Id equals userRole.UserId
                 join role in _db.Roles on userRole.RoleId equals role.Id
@@ -122,7 +128,12 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
 
-
+        /// <summary>
+        /// Edit POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="objAppointmentVM"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int id, AppointmentDetailsViewModel objAppointmentVM)
@@ -145,10 +156,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     .AddMinutes(objAppointmentVM.Appointment.AppointmentTime.Minute);
 
 
-                // retrive appointment object from DB 
+                // retrieve appointment object from DB 
                 var appointmentFromDb = _db.Appointments.Where(a => a.Id == objAppointmentVM.Appointment.Id).FirstOrDefault();
 
-                // upadte fields taken from the view
+                // update fields taken from the view
                 appointmentFromDb.CustomerName = objAppointmentVM.Appointment.CustomerName;
                 appointmentFromDb.CustomerEmail = objAppointmentVM.Appointment.CustomerEmail;
                 appointmentFromDb.CustomerPhoneNumber = objAppointmentVM.Appointment.CustomerPhoneNumber;
@@ -188,6 +199,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// we will receive any parameters if user has entered them
         /// productPage set 1 as default: if not parameter is passed it will load first page
         /// </summary>
+        /// <param name="productPage"></param>
+        /// <param name="searchName"></param>
+        /// <param name="searchEmail"></param>
+        /// <param name="searchPhone"></param>
+        /// <param name="searchDate"></param>
         /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Index(int productPage=1, string searchName=null, string searchEmail=null, string searchPhone=null, string searchDate=null)
@@ -256,33 +272,27 @@ namespace BookingWebsite.Areas.Admin.Controllers
             }
 
 
-            // TODO , after few tries I'm not sure how to do this, Identity in core confuses me. but lets try anyway, start small an work this out
             // we need to do the same as we did for employee, customer should be able to view their own appointments
 
-            // get current user
+            // get current user from _userManager
             var custUser = await _userManager.GetUserAsync(HttpContext.User);
 
+            // grt customer email
             var userEmail = custUser.Email;
 
-
-            if (User.IsInRole(SD.CustomerEndUser)) //TODO
+            // if in role Customer
+            if (User.IsInRole(SD.CustomerEndUser)) 
             {
-                // this is where we use the above created claim to retrieve user ID // 
+                // this is where we use the above created claim to retrieve user ID 
                 appointmentVM.Appointments =
 
-                    // TODO  ??? , ok so the problem is that customer is not connected with appointments via regular relationship we have for other entities... 
+                    // TODO, ok so the problem is that customer is not connected with appointments via regular asp created Id but we have a unique email 
                     appointmentVM.Appointments.Where(a => a.CustomerEmail == userEmail).ToList();
             }
 
 
 
-
-
-
-            // we need to check if 
-
-
-            // filter criteria
+            // filter criteria for out filtering search thing 
             if (searchName != null)
             {
                 // checking if customer name from appointment View Model matches to the passes string that user has entered- to list in case more than one match
@@ -335,18 +345,17 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
             // count how many appointments there is after the search criteria
 
-            var count = appointmentVM.Appointments.Count(); //TODO check this
+            var count = appointmentVM.Appointments.Count(); 
 
             // order and filter
             // skipping the appointments that were displayed on previous page
             // for example if we are on page two this makes sure that appointments listed on page one are not displayed on page one
-            // in short - it feaches the correct records for the page we are on
+            // in short - it fetches the correct records for the page we are on
             appointmentVM.Appointments = appointmentVM.Appointments.OrderBy(p => p.AppointmentDate)
                 .Skip((productPage - 1) * PageSize)
                 .Take(PageSize).ToList();
             
             // now we need to populate PagingInfoModel
-
             appointmentVM.PagingInfo = new PagingInfo
             {
                 CurrentPage = productPage,
@@ -362,8 +371,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
 
-
-        //GET Details action method
+        /// <summary>
+        /// GET Details action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
@@ -395,18 +407,19 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 
             };
 
-            Debug.WriteLine(objAppointmentVM.SalesPerson);
 
-
-            // now that we have our products we ween to pas the m on to the view don't we? ;-) 
+            // now that we have our products we need to pass them to the view 
 
             return View(objAppointmentVM);
         }
 
 
 
-
-        //GET Delete action method
+        /// <summary>
+        /// GET Delete action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -464,11 +477,14 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        /// <summary>
+        /// Appointment List - Excel File download method
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> AppList()
         {
-            var appList = _db.Appointments.Include(a => a.SalesPerson); //TODO FIX THIS
+            var appList = _db.Appointments.Include(a => a.SalesPerson); 
             return View(appList);
         }
 
@@ -478,7 +494,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         // later on this can be also expanded with SQL JOIN query to include products (for example to include price of a property)
         public void AppListDownload()
         {
-            //TODO make SQL JOIN query to include product type and price in report
+            //get data
             var appointmentsDw = from appointments in _db.Appointments.Include(a => a.SalesPerson)
                 orderby appointments.AppointmentDate descending
                 select new
@@ -560,9 +576,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 //one thing to bare in mind is file size and memory, on a local pc it's fine we have plenty of memory,
                 //but on a server it may be an issue to load the whole thing - possible out of memory exceptions
                 // what we can do to make sure we are thinking about memory is to stream the data
-
                 // so, lets set up MemoryStream
-
                 using (var memoryStream = new MemoryStream())
                 {
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -570,11 +584,6 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     excel.SaveAs(memoryStream);
                     memoryStream.WriteTo(Response.Body);
                 }
-
-
-
-
-
 
             }
 
@@ -585,5 +594,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
      
 
 
-    }//Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault()
+    }
 }
+
+
+//Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault()

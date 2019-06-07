@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookingWebsite.Models
 {
+    //TODO
     /// <summary>
-    /// order header contains important details about order like when was it placed, order total, paymrnt status, user who placed order
+    /// order header contains details about order like when was it placed, order total, payment status, user who placed order
+    /// This is yet to be implemented - to enable seller to make payments
     /// </summary>
     public class OrderHeader
     {

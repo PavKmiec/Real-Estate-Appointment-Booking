@@ -17,6 +17,9 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Dependency;
 namespace BookingWebsite.Controllers
 {
     // Indicating that controller resided within Customers area
+    /// <summary>
+    /// Customer Home controller
+    /// </summary>
     [Area("Customer")]
     public class HomeController : Controller
     {
@@ -30,7 +33,10 @@ namespace BookingWebsite.Controllers
             _db = db;
 
         }
-
+        /// <summary>
+        /// Products to list - Index
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()
         {
             // in case we want to also display Product Types and Tags on our homepage we Include this
@@ -41,6 +47,11 @@ namespace BookingWebsite.Controllers
             return View(productList);
         }
 
+        /// <summary>
+        /// Details Action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Details(int id)
         {
             var product = await _db.Products.Include(m => m.ProductTypes).Include(m => m.Tags).Where(m=>m.Id==id).FirstOrDefaultAsync();
@@ -48,6 +59,11 @@ namespace BookingWebsite.Controllers
             return View(product);
         }
 
+        /// <summary>
+        /// Details POST - adding to cart
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Details")]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -69,6 +85,11 @@ namespace BookingWebsite.Controllers
 
         }
 
+        /// <summary>
+        /// Removing product from cart
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IActionResult Remove(int id)
         {
             // retrieve cart

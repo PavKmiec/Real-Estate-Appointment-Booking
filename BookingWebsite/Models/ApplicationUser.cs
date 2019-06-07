@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BookingWebsite.Models
 {
+    /// <summary>
+    /// Application user model - inheriting from IdentityUser
+    /// Additional properties for users are here 
+    /// </summary>
     public class ApplicationUser : IdentityUser
     {
 
@@ -33,17 +37,20 @@ namespace BookingWebsite.Models
         public string Grade { get; set; }
 
 
-
+        /// <summary>
+        /// user in Employee role can belong to a branch
+        /// </summary>
         public int? BranchId { get; set; }
         public Branch Branch { get; set; }
 
 
-
+        /// <summary>
+        /// Products
+        /// </summary>
         public ICollection<Products> Products { get; set; }
 
 
 
-        //[NotMapped]
-        //public bool IsSuperAdmin { get; set; }
+        
     }
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Models
 {
+    /// <summary>
+    /// View Model for products selected for appointment, Appointment + Products 
+    /// </summary>
     public class ProductsSelectedForAppointment
     {
         public int Id { get; set; }

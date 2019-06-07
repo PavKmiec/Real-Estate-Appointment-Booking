@@ -8,24 +8,47 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookingWebsite.Models
 {
+    /// <summary>
+    /// Products Model
+    /// </summary>
     public class Products
     {
+
+        /// <summary>
+        /// Id used by EF
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Product Name
+        /// </summary>
         public string Name { get; set; }
 
+
+        /// <summary>
+        /// Price
+        /// </summary>
         public double Price { get; set; }
 
-
+        /// <summary>
+        /// Availability for sale
+        /// </summary>
         public bool Available { get; set; }
 
+
+        /// <summary>
+        /// image location
+        /// </summary>
         public string Image { get; set; }
 
+
+        /// <summary>
+        /// Product description
+        /// </summary>
         public string Description { get; set; }
-        // TODO add this to all views too
 
 
-        // full;part;no
+        // Furnish detail - (Furnished, unfurnished, part furnished)
         public string FurnishDetail { get; set; }
 
 

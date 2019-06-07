@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BookingWebsite.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Seeding admin users 
+    /// </summary>
     public class AddAdminUserModel : PageModel
     {
 
@@ -20,6 +23,11 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
         // role manager
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="roleManager"></param>
         public AddAdminUserModel(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager)
@@ -27,7 +35,10 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
             _userManager = userManager;
             _roleManager = roleManager;
         }
-
+        /// <summary>
+        /// on GET method - seed
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> OnGet()
         {
 
@@ -105,6 +116,22 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
             {
                 await _roleManager.CreateAsync(new IdentityRole(SD.CustomerEndUser));
 
+                var userCustomer = new ApplicationUser
+                {
+                    UserName = "customer@gmail.com",
+                    Email = "customer@gmail.com",
+                    PhoneNumber = "014624862585",
+                    Name = "Customer User",
+                    StreetAddress = "15 Main Street",
+                    PostCode = "G1",
+                    City = "Glasgow"
+
+                };
+
+                var restultUser = await _userManager.CreateAsync(userCustomer, "Pass123@");
+                await _userManager.AddToRoleAsync(userCustomer, SD.CustomerEndUser);
+
+
             }
             if (!await _roleManager.RoleExistsAsync(SD.SellerEndUser))
             {
@@ -126,10 +153,6 @@ namespace BookingWebsite.Areas.Identity.Pages.Account
                 await _userManager.AddToRoleAsync(userSeller, SD.SellerEndUser);
 
             }
-
-
-            
-
 
             return Page();
 

@@ -34,6 +34,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
         //[Authorize(Roles = SD.SellerEndUser + "," + SD.SuperAdminEndUser)]
+        /// <summary>
+        /// Index action
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             
@@ -42,19 +46,26 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
 
-        // GET Create Action Method
+        /// <summary>
+        /// Get Create Action
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create()
         {
             return View();
         }
 
-        //POST Create action method
 
-        [HttpPost]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// Create POST action
+        /// </summary>
+        /// <param name="productTypes"></param>
+        /// <returns></returns>
+        [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create(ProductTypes productTypes)
         {
@@ -76,6 +87,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         // GET Edit Action Method - retrieving Id which user wants to edit
+        /// <summary>
+        /// GET Edit action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Edit(int? id)
         {
             // if id is null return nor found
@@ -96,13 +112,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return View(productType);
         }
 
-        //POST Edit action method
 
-        [HttpPost]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// POST Edit action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="productTypes"></param>
+        /// <returns></returns>
+        [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(int id, ProductTypes productTypes)
         {
@@ -133,7 +154,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        // GET Delete Action Method - retrieving Id which user wants to edit
+        /// <summary>
+        /// GET Delete action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Delete(int? id)
         {
             // if id is null return nor found
@@ -156,11 +181,16 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         //POST Delete action method
 
-        [HttpPost, ActionName("Delete")]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// Delete POST
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) // all we need to delete is an Id
         {
@@ -176,6 +206,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
         // GET Details Action Method - retrieving Id which user wants to view
+        /// <summary>
+        /// Details Action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Details(int? id)
         {
             // if id is null return nor found

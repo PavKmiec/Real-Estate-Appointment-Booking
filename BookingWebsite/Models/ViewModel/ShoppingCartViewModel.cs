@@ -5,13 +5,20 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Models.ViewModel
 {
+    /// <summary>
+    /// Shopping Cart View Model - 
+    /// </summary>
     public class ShoppingCartViewModel
     {
-        // for this Shopping cart ViewModel we need list of products as well as we need Appointments model
-        // list of products
+        /// <summary>
+        /// list of products
+        /// </summary>
         public List<Products> Products { get; set; }
 
-        // appointments
+
+        /// <summary>
+        /// appointments
+        /// </summary>
         public Appointments Appointments { get; set; }
     }
 }

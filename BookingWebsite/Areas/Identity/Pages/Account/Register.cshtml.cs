@@ -15,6 +15,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BookingWebsite.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Register Model - additional register properties were added here
+    /// </summary>
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {

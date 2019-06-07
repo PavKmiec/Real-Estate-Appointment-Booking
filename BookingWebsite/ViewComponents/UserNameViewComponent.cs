@@ -12,7 +12,7 @@ namespace BookingWebsite.ViewComponents
     /// <summary>
     /// This is anew concept in .net core
     /// and it has similar purpose to partial views
-    /// we will use this to display user Name instead of their email address once they log in
+    /// we will use this to display user full Name instead of their email address once they log in
     /// </summary>
     public class UserNameViewComponent : ViewComponent
     {

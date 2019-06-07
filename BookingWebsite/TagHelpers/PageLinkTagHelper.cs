@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace BookingWebsite.TagHelpers
 {
 
-    // we need to define what will be target element for this
-    // - in other words, this page tag helpers will be assigned inside div tag in View, and add atribute of page-model
+    /// <summary>
+    /// we need to define what will be target element for this
+    /// - in other words, this page tag helpers will be assigned inside div tag in View, and add atribute of page-model
+    /// </summary>
     [HtmlTargetElement("div", Attributes = "page-model")]
     public class PageLinkTagHelper : TagHelper
     {
@@ -38,8 +40,6 @@ namespace BookingWebsite.TagHelpers
 
 
         // attributes that we need for pagination
-
-
         public PagingInfo PageModel { get; set; }
         public string PageAction { get; set; }
         public bool PageClassesEnabled { get; set; }
@@ -47,8 +47,11 @@ namespace BookingWebsite.TagHelpers
         public string PageClassNormal { get; set; }
         public string PageClassSelected { get; set; }
 
-        // here is where we build the function fro the processing 
-
+        /// <summary>
+        /// function for the processing 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="output"></param>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             // it will fetch the urs inside the helper

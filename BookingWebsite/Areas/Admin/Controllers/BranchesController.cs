@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
+    /// <summary>
+    /// Branches controller - each employee can belong to a branch of a company 
+    /// </summary>
     [Area("Admin")]
     [Authorize(Roles = SD.SuperAdminEndUser)]
     public class BranchesController : Controller
@@ -23,14 +26,22 @@ namespace BookingWebsite.Areas.Admin.Controllers
             _db = db;
         }
 
-        /// GET: Admin/Branches - retrieve from db and pass i to view
+
+        /// <summary>
+        /// Get list and pass to view
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()
         {
 
             return View(await _db.Branches.ToListAsync());
         }
 
-        // GET: Admin/Branches/Details/5
+        /// <summary>
+        /// GET details action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,7 +59,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return View(branch);
         }
 
-        // GET: Admin/Branches/Create
+
+        /// <summary>
+        /// Create Action , GET
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create()
         {
             return View();
@@ -57,6 +72,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         // POST: Admin/Branches/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Create POST action
+        /// </summary>
+        /// <param name="branch"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Location")] Branch branch)
@@ -70,7 +90,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return View(branch);
         }
 
-        // GET: Admin/Branches/Edit/5
+        /// <summary>
+        /// GET Edit action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,6 +113,12 @@ namespace BookingWebsite.Areas.Admin.Controllers
         // POST: Admin/Branches/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// POST Edit action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="branch"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Location")] Branch branch)
@@ -122,6 +152,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
         // GET: Admin/Branches/Delete/5
+        /// <summary>
+        /// GET Delete action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -140,6 +175,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
         // POST: Admin/Branches/Delete/5
+        /// <summary>
+        /// POST Delete action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -150,6 +190,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Branch Exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private bool BranchExists(int id)
         {
             return _db.Branches.Any(e => e.Id == id);

@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Models
 {
+    //TODO
+    /// <summary>
+    /// This is yet to be implemented - this is for the seller to be able to pay 1% fee when  seller user adds a product to the system
+    /// </summary>
     public class OrderDetails
     {
+        /// <summary>
+        /// Id used by EF
+        /// </summary>
         [Key]
         public int Id { get; set; }
 

@@ -21,6 +21,9 @@ using OfficeOpenXml.Style;
 
 namespace BookingWebsite.Controllers
 {
+    /// <summary>
+    /// Products controller
+    /// </summary>
     [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.SellerEndUser + "," + SD.Employee)]
     [Area("Admin")]
     public class ProductsController : Controller
@@ -28,7 +31,7 @@ namespace BookingWebsite.Controllers
         // we need to access database
         private readonly ApplicationDbContext _db;
 
-        // 
+        // we need hosting environment for uploading images
         private readonly IHostingEnvironment _hostingEnvironment;
 
 
@@ -38,7 +41,11 @@ namespace BookingWebsite.Controllers
         public ProductsViewModel ProductsVM { get; set; }
 
 
-        // constructor - retrieving db using dependency injection 
+        /// <summary>
+        /// Constructor - retrieving db using dependency injection
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="hostingEnvironment"></param>
         public ProductsController(ApplicationDbContext db, IHostingEnvironment hostingEnvironment)
         {
             _db = db;
@@ -55,12 +62,15 @@ namespace BookingWebsite.Controllers
 
         }
 
+        /// <summary>
+        /// GET Index action - products to list
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()  
         {
 
 
-            // if user is seller redirect to create
-
+            // if user is in role "Seller" redirect to create method
             if (User.IsInRole(SD.SellerEndUser))
             {
                 return RedirectToAction("Create");
@@ -74,7 +84,10 @@ namespace BookingWebsite.Controllers
 
 
         // Get : Product Create
-
+        /// <summary>
+        /// Get create action
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create()
         {
 
@@ -84,7 +97,10 @@ namespace BookingWebsite.Controllers
 
 
         // POST : Product Create
-
+        /// <summary>
+        /// POST create action for product
+        /// </summary>
+        /// <returns></returns>
         [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePOST()  // note that because we have bind-ed ProductsViewModel we do not have to pass it here
@@ -95,7 +111,7 @@ namespace BookingWebsite.Controllers
 
             }
 
-
+            // add
             _db.Products.Add(ProductsVM.Products);
             await _db.SaveChangesAsync();
 
@@ -145,18 +161,7 @@ namespace BookingWebsite.Controllers
 
             await _db.SaveChangesAsync();
 
-            // if user is a redirect to payment
-            //if (User.IsInRole(SD.SellerEndUser))
-            //{
-            //    // fee 1 %
-            //    double fee = 0.01 * ProductsVM.Products.Price;
-            //    return View("SellerConfirmAdd", fee);
-            //    return RedirectToAction(Payment);
-
-
-            //    //TODO, calculate 1% of the price and redirect to payment passing the value in
-            //}
-
+            // because we don't have an online payment implemented yet, this is a temporary solution, to display a message to a seller 
             if (User.IsInRole(SD.SellerEndUser))
             {
                 TempData.Add("Added", " You have successfully Added a Property to our system, one of our advisers will contact you to arrange a payment. Thank you");
@@ -171,7 +176,11 @@ namespace BookingWebsite.Controllers
 
 
         // GET : Edit
-        //  passing id parameter of the product that user wants to edit
+        /// <summary>
+        /// GET edit action - passing id parameter of the product that user wants to edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -200,7 +209,11 @@ namespace BookingWebsite.Controllers
 
 
         // POST : Edit
-
+        /// <summary>
+        /// Product Edit POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
@@ -249,7 +262,7 @@ namespace BookingWebsite.Controllers
                     productsFromDb.Image = ProductsVM.Products.Image;
                 }
 
-                // update rest of the properties 
+                // update  properties 
                 productsFromDb.Name = ProductsVM.Products.Name;
                 productsFromDb.Price = ProductsVM.Products.Price;
                 productsFromDb.ProductTypeId = ProductsVM.Products.ProductTypeId;
@@ -268,8 +281,11 @@ namespace BookingWebsite.Controllers
             return View(ProductsVM);
         }
 
-        // GET : Details
-        //  passing id parameter of the product that user wants to View
+        /// <summary>
+        /// GET Details action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -297,8 +313,11 @@ namespace BookingWebsite.Controllers
 
 
 
-        // GET : Delete
-        //  passing id parameter of the product that user wants to delete
+        /// <summary>
+        /// GET action - Delete product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -325,8 +344,11 @@ namespace BookingWebsite.Controllers
 
         }
 
-        // POST : Delete
-
+        /// <summary>
+        /// Delete POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
@@ -358,10 +380,13 @@ namespace BookingWebsite.Controllers
 
         }
 
-
+        /// <summary>
+        /// A method for downloading excel list of products
+        /// </summary>
         [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee)]
         public void ProdListDownload()
         {
+            // get
             var productDW = from a in _db.Products.Include(a=>a.ProductTypes)
                             orderby a.Name descending
                             select new
@@ -440,9 +465,7 @@ namespace BookingWebsite.Controllers
                 //one thing to bare in mind is file size and memory, on a local pc it's fine we have plenty of memory,
                 //but on a server it may be an issue to load the whole thing - possible out of memory exceptions
                 // what we can do to make sure we are thinking about memory is to stream the data
-
                 // so, lets set up MemoryStream
-
                 using (var memoryStream = new MemoryStream())
                 {
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

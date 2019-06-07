@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Models.ViewModel
 {
+    //TODO
     /// <summary>
     /// View Model to use in registration - to make selecting Branch possible in case of adding employees
+    /// This is yet to be implemented - low priority
     /// </summary>
     public class UserBranchViewModel
     {
@@ -15,6 +17,5 @@ namespace BookingWebsite.Models.ViewModel
 
         public List<Branch> BranchList { get; set; }
 
-        // or could do: public Branch Branch, and add public List<string> BranchList - in case we would only need Branch Name (one property from model)
     }
 }

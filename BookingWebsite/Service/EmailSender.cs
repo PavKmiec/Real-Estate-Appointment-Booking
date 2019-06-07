@@ -9,6 +9,9 @@ using SendGrid.Helpers.Mail;
 
 namespace BookingWebsite.Service
 {
+    /// <summary>
+    /// Email sender - sending email using sendGrid API
+    /// </summary>
     public class EmailSender : IEmailSender
     {
 
