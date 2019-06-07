@@ -76,7 +76,8 @@
         <table class="table table-striped border">
             <tr class="table-info">
                 <th>
-                    @Html.DisplayNameFor(m => m.Appointments.FirstOrDefault().SalesPerson.Name)
+                Sales Person
+                @*@Html.DisplayNameFor(m => m.Appointments.FirstOrDefault().SalesPerson.Name)*@
                 </th>
                 <th>
                     @Html.DisplayNameFor(m => m.Appointments.FirstOrDefault().AppointmentDate)
@@ -132,15 +133,15 @@
 </form>
 
 @section Scripts
-{
+    {
     <script>
-        $(function() {
+        $(function () {
             $("#datepicker").datepicker({
                 minDate: +1,
                 maxDate: "+3M"
             });
         });
     </script>
-    
-    
+
+
 }
