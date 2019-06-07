@@ -167,7 +167,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 appointmentFromDb.isConfirmed = objAppointmentVM.Appointment.isConfirmed;
 
                 // check if admin to enable Sales  Person change / assign
-                if (User.IsInRole(SD.SuperAdminEndUser + "," + SD.AdminEndUser))
+                if (User.IsInRole(SD.SuperAdminEndUser)) //TODO add Manager to be able to assign Employee to appointment 
                 {
                     // update Sales Person
                     appointmentFromDb.SalesPersonId = objAppointmentVM.Appointment.SalesPersonId;
