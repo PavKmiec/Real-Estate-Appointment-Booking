@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BookingWebsite.Areas.Identity.Pages.Account.Manage;
 using BookingWebsite.Data;
 using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using BookingWebsite.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +27,8 @@ namespace BookingWebsite.Areas.Customer.Controllers
         private readonly ApplicationDbContext _db;
 
         private readonly IEmailSender _emailSender;
+        private UserManager<IdentityUser> _userManager;
+
 
 
 
@@ -34,10 +38,11 @@ namespace BookingWebsite.Areas.Customer.Controllers
         public ShoppingCartViewModel ShoppingCartVM { get; set; }
 
         // constructor
-        public ShoppingCartController(ApplicationDbContext db, IEmailSender emailSender)
+        public ShoppingCartController(ApplicationDbContext db, IEmailSender emailSender, UserManager<IdentityUser> userManager) // IdentityUser??
         {
             _db = db;
             _emailSender = emailSender;
+            _userManager = userManager;
 
             // initialise ShoppingCartVM
             ShoppingCartVM = new ShoppingCartViewModel()
@@ -60,13 +65,34 @@ namespace BookingWebsite.Areas.Customer.Controllers
             List<int> lstShoppingCart = HttpContext.Session.Get<List<int>>("ssShoppingCart");
             if (lstShoppingCart.Count>0)
             {
+
+                // reference
+                //var currUser = await _userManager.GetUserAsync(User);
+
+                //ApplicationUser appUser = new ApplicationUser
+                //{
+                //    Name = currUser.Name,
+                //    PhoneNumber = currUser.PhoneNumber,
+                //    Email = currUser.Email
+
+                //};
+
+
                 // build complete list of products so we can use that in Shopping Cart View
                 foreach (int cartItem in lstShoppingCart)
                 {
                     // we will also include product types and tags once we load the product
                     Products prod = _db.Products.Include(p=>p.Tags).Include(p=>p.ProductTypes).Where(p => p.Id == cartItem).FirstOrDefault();
                     ShoppingCartVM.Products.Add(prod);
+
+
+                    // get current user - to use it to pre-fill user data for appointment
+                    var appUser = await _userManager.GetUserAsync(User);
+
+                    // set user for appointment from logged in user
+                    ShoppingCartVM.CustomerUser = (ApplicationUser) appUser;
                 }
+
             }
             // once we loaded products we will pass the model to the View
             return View(ShoppingCartVM);
@@ -99,8 +125,20 @@ namespace BookingWebsite.Areas.Customer.Controllers
                 .AddMinutes(ShoppingCartVM.Appointments.AppointmentTime.Minute);
 
 
+
+            
+
             // create object for appointments
             Appointments appointments = ShoppingCartVM.Appointments;
+
+            // get date from VM for customer to save it for appointment
+            appointments.CustomerName = ShoppingCartVM.CustomerUser.Name;
+            appointments.CustomerEmail = ShoppingCartVM.CustomerUser.Email;
+            appointments.CustomerPhoneNumber = ShoppingCartVM.CustomerUser.PhoneNumber;
+
+
+
+
 
             // add this appointment to database
 

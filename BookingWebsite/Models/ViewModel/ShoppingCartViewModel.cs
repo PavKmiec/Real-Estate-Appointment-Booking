@@ -20,5 +20,10 @@ namespace BookingWebsite.Models.ViewModel
         /// appointments
         /// </summary>
         public Appointments Appointments { get; set; }
+
+
+
+
+        public ApplicationUser CustomerUser { get; set; }
     }
 }

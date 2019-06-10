@@ -1,23 +1,52 @@
-﻿@model int
+﻿@using BookingWebsite.Utility
+@model int
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
 
-<td style="width: 150px">
-    <div>
-        <div class="btn-group" role="group">
-            <a type="button" class="btn btn-primary" href="@Url.Action("Edit/" + Model)">
-                <i class="fas fa-edit"></i>
-            </a>
-            <a type="button" class="btn btn-success" href="@Url.Action("Details/" + Model)">
-                <i class="far fa-list-alt"></i>
-            </a>
-            <a type="button" class="btn btn-danger" href="@Url.Action("Delete/" + Model)">
-                <i class="fas fa-trash-alt"></i>
-            </a>
+
+@if (!User.IsInRole(SD.CustomerEndUser))
+{
+
+    <td style="width: 150px">
+        <div>
+            <div class="btn-group" role="group">
+                <a type="button" class="btn btn-primary" href="@Url.Action("Edit/" + Model)">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a type="button" class="btn btn-success" href="@Url.Action("Details/" + Model)">
+                    <i class="far fa-list-alt"></i>
+                </a>
+                <a type="button" class="btn btn-danger" href="@Url.Action("Delete/" + Model)">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
+
         </div>
 
-    </div>
+    </td>
 
-</td>
+
+
+
+}
+else
+{
+    
+    <td style="width: 150px">
+        <div>
+            <div class="btn-group" role="group">
+                
+                <a type="button" class="btn btn-danger" href="@Url.Action("Cancel/" + Model)">
+                    <i class="fas fa-power-off"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </td>
+
+
+
+}

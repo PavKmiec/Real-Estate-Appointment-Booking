@@ -50,6 +50,9 @@ namespace BookingWebsite.Models
         public ICollection<Products> Products { get; set; }
 
 
+        // link appointments 
+
+
 
         
     }

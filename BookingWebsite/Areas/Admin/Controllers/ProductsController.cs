@@ -22,7 +22,7 @@ using OfficeOpenXml.Style;
 namespace BookingWebsite.Controllers
 {
     /// <summary>
-    /// Products controller
+    /// Products controller - handling product related operations including CRUD
     /// </summary>
     [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.SellerEndUser + "," + SD.Employee)]
     [Area("Admin")]

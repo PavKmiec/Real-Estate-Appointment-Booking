@@ -29,6 +29,18 @@ namespace BookingWebsite.Models
         [ForeignKey("SalesPersonId")]
         public virtual ApplicationUser SalesPerson { get; set; }
 
+
+
+
+        //[Display(Name = "Customer")]
+        //public string CustomerId { get; set; }
+
+        ///// <summary>
+        ///// Foreign Key reference pointing to SalesPersonId
+        ///// </summary>
+        //[ForeignKey("CustomerId")]
+        //public virtual ApplicationUser Customer { get; set; }
+
         /// <summary>
         /// Appointment date
         /// </summary>
@@ -60,6 +72,10 @@ namespace BookingWebsite.Models
         /// is appointment confirmed - bool
         /// </summary>
         public bool isConfirmed { get; set; }
+
+
+
+        public bool isCancelled { get; set; }
 
 
 

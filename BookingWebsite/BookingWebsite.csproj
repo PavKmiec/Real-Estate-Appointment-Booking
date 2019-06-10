@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\css\MyStyle.css" />
+    <Content Remove="wwwroot\js\jquery-ui.min_disabled.js" />
+    <Content Remove="wwwroot\js\jquery-ui_disabled.js" />
   </ItemGroup>
 
   <ItemGroup>

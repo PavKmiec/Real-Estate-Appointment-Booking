@@ -65,19 +65,26 @@
                             <label>Name : </label>
                         </div>
                         <div class="col-12" style="padding-bottom: 15px">
-                            <input asp-for="@Model.Appointments.CustomerName" class="form-control" />
+                            <input asp-for="@Model.CustomerUser.Name" readonly class="form-control" />
+
+                            @*<input asp-for="@Model.Appointments.CustomerName" class="form-control"/>*@
+
                         </div>
                         <div class="col-12">
                             <label>Phone Number : </label>
                         </div>
                         <div class="col-12" style="padding-bottom: 15px">
-                            <input asp-for="@Model.Appointments.CustomerPhoneNumber" class="form-control" />
+                            <input asp-for="@Model.CustomerUser.PhoneNumber" readonly class="form-control" />
+
+                            @*<input asp-for="@Model.Appointments.CustomerPhoneNumber" class="form-control"/>*@
                         </div>
                         <div class="col-12">
                             <label>Email : </label>
                         </div>
                         <div class="col-12" style="padding-bottom: 15px">
-                            <input asp-for="@Model.Appointments.CustomerEmail" class="form-control" />
+                            <input asp-for="@Model.CustomerUser.Email" readonly class="form-control" />
+
+                            @*<input asp-for="@Model.Appointments.CustomerEmail" class="form-control"/>*@
                         </div>
                         <div class="col-12">
                             <label>Appointment Date : </label>
@@ -115,10 +122,9 @@
     <script>
         $('.timepicker').timepicker({
             timeFormat: 'h:mm p',
-            interval: 30,
+            interval: 60,
             minTime: '10',
             maxTime: '3:00pm',
-            defaultTime: '10',
             startTime: '10:00',
             dynamic: true,
             dropdown: true,
