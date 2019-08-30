@@ -1,3 +1,2 @@
-# BookingWebsite
-Booking system web app project in c# .net core mvc - practice / college
-It's a work in progress...
+Real Estate appointment booking and property managment Web-App - .net Core
+
