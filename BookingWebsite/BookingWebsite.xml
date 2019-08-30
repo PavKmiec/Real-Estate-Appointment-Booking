@@ -1,0 +1,896 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BookingWebsite</name>
+    </assembly>
+    <members>
+        <member name="T:BookingWebsite.Areas.Admin.Controllers.AdminUsersController">
+            <summary>
+            Administration of all users controller CRUD
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.#ctor(BookingWebsite.Data.ApplicationDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="db"></param>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.Index">
+            <summary>
+             display list of users
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.Edit(System.String)">
+            <summary>
+            GET Edit action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.Edit(System.String,BookingWebsite.Models.ApplicationUser)">
+            <summary>
+            Edit POST action
+            </summary>
+            <param name="id"></param>
+            <param name="applicationUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.Delete(System.String)">
+            <summary>
+            Delete Action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AdminUsersController.DeletePost(System.String)">
+            <summary>
+            Delete POST action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Admin.Controllers.AppointmentsController">
+            <summary>
+            Appointments Controller 
+            </summary>
+            Authorization for users specified in SD utility class
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.#ctor(BookingWebsite.Data.ApplicationDbContext,Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.UI.Services.IEmailSender)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="dbContext"></param>
+            <param name="userManager"></param>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Edit(System.Nullable{System.Int32})">
+            <summary>
+            GET Edit Action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Edit(System.Int32,BookingWebsite.Models.ViewModel.AppointmentDetailsViewModel)">
+            <summary>
+            Edit POST action
+            </summary>
+            <param name="id"></param>
+            <param name="objAppointmentVM"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Index(System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            index method for Appointments controller, using async has many benefits, main being requests can be served even when another request is still processing,
+            this is combined with using "await"
+            we also use parameters in this action to enable pseudo-search (filtering) - rather that making additional method for searching, we can use this one
+            we will receive any parameters if user has entered them
+            productPage set 1 as default: if not parameter is passed it will load first page
+            </summary>
+            <param name="productPage"></param>
+            <param name="searchName"></param>
+            <param name="searchEmail"></param>
+            <param name="searchPhone"></param>
+            <param name="searchDate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Details(System.Nullable{System.Int32})">
+            <summary>
+            GET Details action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Delete(System.Nullable{System.Int32})">
+            <summary>
+            GET Delete action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.DtleteConfirmed(System.Int32)">
+            <summary>
+            POST Delete Action Method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.AppList">
+            <summary>
+            Appointment List - Excel File download method
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.AppointmentsController.Cancel(System.Int32,BookingWebsite.Models.ViewModel.AppointmentDetailsViewModel)">
+            <summary>
+            Action methos for appointments
+            an email will also be sent upon cancellation 
+            </summary>
+            <param name="id"></param>
+            <param name="objAppointmentVM"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Admin.Controllers.BranchesController">
+            <summary>
+            Branches controller - each employee can belong to a branch of a company 
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Index">
+            <summary>
+            Get list and pass to view
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Details(System.Nullable{System.Int32})">
+            <summary>
+            GET details action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Create">
+            <summary>
+            Create Action , GET
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Create(BookingWebsite.Models.Branch)">
+            <summary>
+            Create POST action
+            </summary>
+            <param name="branch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Edit(System.Nullable{System.Int32})">
+            <summary>
+            GET Edit action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Edit(System.Int32,BookingWebsite.Models.Branch)">
+            <summary>
+            POST Edit action
+            </summary>
+            <param name="id"></param>
+            <param name="branch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.Delete(System.Nullable{System.Int32})">
+            <summary>
+            GET Delete action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.DeleteConfirmed(System.Int32)">
+            <summary>
+            POST Delete action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.BranchesController.BranchExists(System.Int32)">
+            <summary>
+            Branch Exists
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:BookingWebsite.Areas.Admin.Controllers.ProductTypesController._db">
+            <summary>
+            application dbcontext object for crud operations, with .net core we using dependency injection
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.#ctor(BookingWebsite.Data.ApplicationDbContext)">
+            <summary>
+            constructor for dependency injection
+            retrieve applicationdbcontext using dependency injection
+            and populate this db inside readonly object 
+            </summary>
+            <param name="db"></param>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Index">
+            <summary>
+            Index action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Create">
+            <summary>
+            Get Create Action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Create(BookingWebsite.Models.ProductTypes)">
+            <summary>
+            Create POST action
+            </summary>
+            <param name="productTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Edit(System.Nullable{System.Int32})">
+            <summary>
+            GET Edit action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Edit(System.Int32,BookingWebsite.Models.ProductTypes)">
+            <summary>
+            POST Edit action
+            </summary>
+            <param name="id"></param>
+            <param name="productTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Delete(System.Nullable{System.Int32})">
+            <summary>
+            GET Delete action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.DeleteConfirmed(System.Int32)">
+            <summary>
+            Delete POST
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.ProductTypesController.Details(System.Nullable{System.Int32})">
+            <summary>
+            Details Action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Admin.Controllers.TagsController">
+            <summary>
+            Controller for Product Tags
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Index">
+            <summary>
+            Index method action, list of tags 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Create">
+            <summary>
+            GET Create
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Create(BookingWebsite.Models.Tags)">
+            <summary>
+            POST Create
+            </summary>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Edit(System.Nullable{System.Int32})">
+            <summary>
+            GET Edit
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Edit(System.Int32,BookingWebsite.Models.Tags)">
+            <summary>
+            POST Edit
+            </summary>
+            <param name="id"></param>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Details(System.Nullable{System.Int32})">
+            <summary>
+            GET Details Action method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.Delete(System.Nullable{System.Int32})">
+            <summary>
+            GET Delete Action Method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.TagsController.DeleteConfirmed(System.Int32)">
+            <summary>
+            POST Delate action method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Admin.Controllers.UserController">
+            <summary>
+            Employee user controller
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.UserController.Index">
+            <summary>
+            Index - list of users
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.UserController.Delete(System.String)">
+            <summary>
+            Delete action 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.UserController.Lock(System.String)">
+            <summary>
+            Lock user account 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Admin.Controllers.UserController.UnLock(System.String)">
+            <summary>
+            Unlock user account
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Customer.Controllers.ShoppingCartController">
+            <summary>
+            Shopping Cart Controller
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Customer.Controllers.ShoppingCartController.Index">
+            <summary>
+            Index Action - we need to retrieve cart items that are in the session based on those Id's we need to populate ViewModel
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Customer.Controllers.ShoppingCartController.IndexPost">
+            <summary>
+            Index POST action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Customer.Controllers.ShoppingCartController.Remove(System.Int32)">
+            <summary>
+            Remove action method
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Areas.Customer.Controllers.ShoppingCartController.AppointmentConfirmation(System.Int32)">
+            <summary>
+            Appointment confirmation / passing appointment id as parameter 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Identity.Pages.Account.AddAdminUserModel">
+            <summary>
+            Seeding admin users 
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Areas.Identity.Pages.Account.AddAdminUserModel.#ctor(Microsoft.AspNetCore.Identity.UserManager{Microsoft.AspNetCore.Identity.IdentityUser},Microsoft.AspNetCore.Identity.RoleManager{Microsoft.AspNetCore.Identity.IdentityRole})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userManager"></param>
+            <param name="roleManager"></param>
+        </member>
+        <member name="M:BookingWebsite.Areas.Identity.Pages.Account.AddAdminUserModel.OnGet">
+            <summary>
+            on GET method - seed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Areas.Identity.Pages.Account.RegisterModel">
+            <summary>
+            Register Model - additional register properties were added here
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Controllers.ProductsController">
+            <summary>
+            Products controller - handling product related operations including CRUD
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.#ctor(BookingWebsite.Data.ApplicationDbContext,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            Constructor - retrieving db using dependency injection
+            </summary>
+            <param name="db"></param>
+            <param name="hostingEnvironment"></param>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Index">
+            <summary>
+            GET Index action - products to list
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Create">
+            <summary>
+            Get create action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.CreatePOST">
+            <summary>
+            POST create action for product
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Edit(System.Nullable{System.Int32})">
+            <summary>
+            GET edit action - passing id parameter of the product that user wants to edit
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Edit(System.Int32)">
+            <summary>
+            Product Edit POST action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Details(System.Nullable{System.Int32})">
+            <summary>
+            GET Details action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.Delete(System.Nullable{System.Int32})">
+            <summary>
+            GET action - Delete product
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.DeleteConfirmed(System.Int32)">
+            <summary>
+            Delete POST action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.ProductsController.ProdListDownload">
+            <summary>
+            A method for downloading excel list of products
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Controllers.HomeController">
+            <summary>
+            Customer Home controller
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Controllers.HomeController.Index">
+            <summary>
+            Products to list - Index
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.HomeController.Details(System.Int32)">
+            <summary>
+            Details Action
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.HomeController.DetailsPost(System.Int32)">
+            <summary>
+            Details POST - adding to cart
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Controllers.HomeController.Remove(System.Int32)">
+            <summary>
+            Removing product from cart
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Extensions.IEnumerableExtensions">
+            <summary>
+            EVarious Extension methods 
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Extensions.IEnumerableExtensions.ToSelectListItem``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            we are converting IEnumerable of product types to selectListItem - this is so we can use this as drop down list to choose value from
+            first argument of extenstion method should be of extended class proceed by "this" keyword
+            second argument since it it a drop down list we will have an integer "selectedValue"
+            our last parameter in int because productTypes has an Id that is int
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="selectedValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BookingWebsite.Extensions.IEnumerableExtensions.ToSelectListItemString``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Because we use this for dropdown list of Sales Person the above extention will not work as User Id is a string
+            So we need another method for Sales Person Drop Down list and we need to pass in a string selectedValue
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="selectedValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Extensions.ReflectionExtension">
+            <summary>
+            extention to help get property values in IEnumerableExtentions 
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.Extensions.ReflectionExtension.GetPropertyValue``1(``0,System.String)">
+            <summary>
+            this enables us to get property values in our IEnumerableExtentions
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="item"></param>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:BookingWebsite.Extensions.SessionExtensions">
+            <summary>
+            default session extensions class with generic object T - from Microsoft docs
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ApplicationUser">
+            <summary>
+            Application user model - inheriting from IdentityUser
+            Additional properties for users are here 
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ApplicationUser.Grade">
+            <summary>
+            Employee properties - because we use one table for all users those can be null in case user is not employee
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ApplicationUser.BranchId">
+            <summary>
+            user in Employee role can belong to a branch
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ApplicationUser.Products">
+            <summary>
+            Products
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.Appointments">
+            <summary>
+            Appointmants model class
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.Id">
+            <summary>
+            Appointment Id, used by EF
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.SalesPersonId">
+            <summary>
+            we need to link sales person for appointment
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.SalesPerson">
+            <summary>
+            Foreign Key reference pointing to SalesPersonId
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.AppointmentDate">
+            <summary>
+            Appointment date
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.AppointmentTime">
+            <summary>
+            Appointment Time - we do not need tis in database as we can use "Date" property to store time too in our DB
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.CustomerName">
+            <summary>
+            Customer name
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.CustomerPhoneNumber">
+            <summary>
+            Customer phone
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.CustomerEmail">
+            <summary>
+            customer email
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Appointments.isConfirmed">
+            <summary>
+            is appointment confirmed - bool
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.Branch">
+            <summary>
+            Branch model - employee can belong to a branch of a company
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Branch.Id">
+            <summary>
+            ID used by EF
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Branch.Name">
+            <summary>
+            Branch name
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Branch.Location">
+            <summary>
+            Branch location
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Branch.ApplicationUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.OrderDetails">
+            <summary>
+            This is yet to be implemented - this is for the seller to be able to pay 1% fee when  seller user adds a product to the system
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.OrderDetails.Id">
+            <summary>
+            Id used by EF
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.OrderHeader">
+            <summary>
+            order header contains details about order like when was it placed, order total, payment status, user who placed order
+            This is yet to be implemented - to enable seller to make payments
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.PagingInfo">
+            <summary>
+            This class is for custom made asp-helper for pagination that we can use in our views that display lists
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.Products">
+            <summary>
+            Products Model
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Id">
+            <summary>
+            Id used by EF
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Name">
+            <summary>
+            Product Name
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Available">
+            <summary>
+            Availability for sale
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Image">
+            <summary>
+            image location
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Description">
+            <summary>
+            Product description
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.ProductTypes">
+            <summary>
+            Linking ProductTypes to ProductTypeId as foreign key
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.Tags">
+            <summary>
+            Linking Tags to TagsId as foreign key
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Products.UserId">
+            <summary>
+            Linking product with user - for sellers to have products
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ProductsSelectedForAppointment">
+            <summary>
+            View Model for products selected for appointment, Appointment + Products 
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ProductTypes">
+            <summary>
+            Model for product typer (House / Flat / Tent/ Boat)
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ProductTypes.Id">
+            <summary>
+            Id used by EF, PK
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ProductTypes.Name">
+            <summary>
+            Product type name
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.Tags">
+            <summary>
+            Product Tags Model
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Tags.Id">
+            <summary>
+            Id used by EF
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.Tags.Name">
+            <summary>
+            Tag Name
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.AppointmentDetailsViewModel.Appointment">
+            <summary>
+            Appointment - Appointments type
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.AppointmentDetailsViewModel.SalesPerson">
+            <summary>
+            We need this to display staff in drop down list so staff can be assigned to appointment 
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.AppointmentDetailsViewModel.Products">
+            <summary>
+            We also need list of products fro this view model to display beside appointment details
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ViewModel.AppointmentViewModel">
+            <summary>
+            Appointment VM 
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.AppointmentViewModel.Appointments">
+            <summary>
+            List of appointments - IEnum of type Appointments
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.AppointmentViewModel.PagingInfo">
+            <summary>
+            Paging 
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ViewModel.OrderDetailsCart">
+            <summary>
+            This is yet to be implemented to enable 1% payment fee when seller adds a product to the system
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ViewModel.ProductsViewModel">
+            <summary>
+            Products View Model - to combine Products with Types and Tags
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.ProductsViewModel.Products">
+            <summary>
+            Products 
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.ProductsViewModel.ProductTypes">
+            <summary>
+            ProductsTypes
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.ProductsViewModel.Tags">
+            <summary>
+            Tags
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ViewModel.ShoppingCartViewModel">
+            <summary>
+            Shopping Cart View Model - 
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.ShoppingCartViewModel.Products">
+            <summary>
+            list of products
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Models.ViewModel.ShoppingCartViewModel.Appointments">
+            <summary>
+            appointments
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Models.ViewModel.UserBranchViewModel">
+            <summary>
+            View Model to use in registration - to make selecting Branch possible in case of adding employees
+            This is yet to be implemented - low priority
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Service.EmailOptions">
+            <summary>
+            Email options - using sendGrid API - sending emails
+            </summary>
+        </member>
+        <member name="P:BookingWebsite.Service.EmailOptions.SendGridKey">
+            <summary>
+            api key
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.Service.EmailSender">
+            <summary>
+            Email sender - sending email using sendGrid API
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.TagHelpers.PageLinkTagHelper">
+            <summary>
+            we need to define what will be target element for this
+            - in other words, this page tag helpers will be assigned inside div tag in View, and add atribute of page-model
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.TagHelpers.PageLinkTagHelper.Process(Microsoft.AspNetCore.Razor.TagHelpers.TagHelperContext,Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput)">
+            <summary>
+            function for the processing 
+            </summary>
+            <param name="context"></param>
+            <param name="output"></param>
+        </member>
+        <member name="T:BookingWebsite.Utility.SD">
+            <summary>
+            SD - Static Details Class to hold static values that are reused in the system
+            </summary>
+        </member>
+        <member name="F:BookingWebsite.Utility.SD.DefaultProductImage">
+            <summary>
+            default image - if none uploaded
+            </summary>
+        </member>
+        <member name="F:BookingWebsite.Utility.SD.ImageFolder">
+            <summary>
+            image folder
+            </summary>
+        </member>
+        <member name="T:BookingWebsite.ViewComponents.UserNameViewComponent">
+            <summary>
+            This is anew concept in .net core
+            and it has similar purpose to partial views
+            we will use this to display user full Name instead of their email address once they log in
+            </summary>
+        </member>
+        <member name="M:BookingWebsite.ViewComponents.UserNameViewComponent.InvokeAsync">
+            <summary>
+            getting user from ClaimsIdentity 
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

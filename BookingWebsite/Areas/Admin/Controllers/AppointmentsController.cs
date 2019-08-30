@@ -15,7 +15,9 @@ using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -34,6 +36,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         // we need db (dependency injection)
         private readonly ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
+
 
         //// TODO userManager that hopefully get me user email for filtering customer appointments, lets see if it works
 
@@ -47,10 +51,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="userManager"></param>
-        public AppointmentsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+        public AppointmentsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender)
         {
             _db = dbContext;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
 
@@ -314,12 +319,22 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 appointmentFromDb.AppointmentDate = objAppointmentVM.Appointment.AppointmentDate;
                 appointmentFromDb.isConfirmed = objAppointmentVM.Appointment.isConfirmed;
 
+                
+                
+
                 // check if admin to enable Sales  Person change / assign
                 if (User.IsInRole(SD.SuperAdminEndUser)
                 ) //TODO add Manager to be able to assign Employee to appointment 
                 {
                     // update Sales Person
                     appointmentFromDb.SalesPersonId = objAppointmentVM.Appointment.SalesPersonId;
+
+
+                }
+
+                if (appointmentFromDb.SalesPersonId != null)
+                {
+                    appointmentFromDb.isCancelled = false;
 
                 }
 
@@ -755,9 +770,35 @@ namespace BookingWebsite.Areas.Admin.Controllers
         }
 
 
-        // TODO Add Cancel Action method POST
+
+        /// <summary>
+        /// Action methos for appointments
+        /// an email will also be sent upon cancellation 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="objAppointmentVM"></param>
+        /// <returns></returns>
+        public IActionResult Cancel(int id, AppointmentDetailsViewModel objAppointmentVM)
+        {
+
+         var appointment = _db.Appointments.FirstOrDefault(a=>a.Id ==id);
+            objAppointmentVM.Appointment = appointment;
 
 
-        
+            objAppointmentVM.Appointment.isCancelled = true;
+            objAppointmentVM.Appointment.isConfirmed = false;
+
+            _db.SaveChanges();
+
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was cancelled successfully");
+            return RedirectToAction(nameof(Index));
+
+        }
+
+       
+
+
     }
 }
