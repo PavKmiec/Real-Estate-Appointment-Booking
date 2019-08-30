@@ -7,22 +7,31 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace BookingWebsite.Extensions
 {
     // extensions method class should be static 
+    /// <summary>
+    /// EVarious Extension methods 
+    /// </summary>
     public static class IEnumerableExtensions
     {
         // all methods should also be static for extension methods
 
 
-        // we are converting IEnumerable of product types to selectListItem - this is so we can use this as drop down list to choose value from
-        // first argument of extention method should be of extended class proceded by "this" keyword
-        // second argument snice it it a drop down list we will have an integer "selectedValue"
-        // our last parameter in int because producTypes has an Id that is int
+        /// <summary>
+        /// we are converting IEnumerable of product types to selectListItem - this is so we can use this as drop down list to choose value from
+        /// first argument of extenstion method should be of extended class proceed by "this" keyword
+        /// second argument since it it a drop down list we will have an integer "selectedValue"
+        /// our last parameter in int because productTypes has an Id that is int
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="selectedValue"></param>
+        /// <returns></returns>
         public static IEnumerable<SelectListItem> ToSelectListItem<T>(this IEnumerable<T> items, int selectedValue)
         {
             // passing the collection that we have in IEnumerable;  using linq 
             return from item in items
                 select new SelectListItem
                 {
-                    // w don not have anything tha would get the name property from this item collection so another Extention is needed
+                    // w don not have anything tha would get the name property from this item collection so another Extension is needed
                     Text = item.GetPropertyValue("Name"),
                     Value = item.GetPropertyValue("Id"),
                     Selected = item.GetPropertyValue("Id").Equals(selectedValue.ToString())

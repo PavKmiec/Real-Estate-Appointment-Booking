@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 
 namespace BookingWebsite.Models
 {
+
+    /// <summary>
+    /// Model for product typer (House / Flat / Tent/ Boat)
+    /// </summary>
     public class ProductTypes
     {
-        // Id - primary key
+        /// <summary>
+        /// Id used by EF, PK
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Product type name
+        /// </summary>
         [Required]
         public string Name { get; set; }
     }

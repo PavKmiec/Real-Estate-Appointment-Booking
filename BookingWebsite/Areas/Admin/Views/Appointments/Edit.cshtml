@@ -61,7 +61,7 @@
                     <label asp-for="Appointment.SalesPerson"></label>
                 </div>
                 <div class="col-8">
-                    @if (User.IsInRole(SD.AdminEndUser))
+                    @if (User.IsInRole(SD.AdminEndUser + "," +  SD.SuperAdminEndUser))
                     {
                         <input asp-for="@Model.Appointment.SalesPerson.Name" readonly class="form-control" />
                         <input asp-for="@Model.Appointment.SalesPersonId" hidden="" />
@@ -116,7 +116,7 @@
 
         $('.timepicker').timepicker({
             timeFormat: 'h:mm p',
-            interval: 30,
+            interval: 60,
             minTime: '10',
             maxTime: '3:00pm',
             defaultTime: '10',

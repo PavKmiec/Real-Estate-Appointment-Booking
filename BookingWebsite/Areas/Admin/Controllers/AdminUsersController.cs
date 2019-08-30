@@ -8,17 +8,25 @@ using BookingWebsite.Models;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
-    [Authorize(Roles = SD.SuperAdminEndUser)]
+
+    /// <summary>
+    /// Administration of all users controller CRUD
+    /// </summary>
+    [Authorize(Roles = SD.SuperAdminEndUser + "," + SD.AdminEndUser)]
     [Area("Admin")]
     public class AdminUsersController : Controller
     {
-
+        // dependency injection - we need db
         private readonly ApplicationDbContext _db;
 
-
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="db"></param>
         public AdminUsersController(ApplicationDbContext db)
         {
             _db = db;
@@ -26,15 +34,23 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         }      
 
-
+        /// <summary>
+        ///  displau list of users
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
-            return View(_db.ApplicationUser.ToList());
+            return View(_db.ApplicationUser.Include(u=>u.Branch).ToList());
         }
 
 
-        // get edit 
+       
 
+        /// <summary>
+        /// GET Edit action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Edit(string id)
         {
             if (id== null || id.Trim().Length==0 )
@@ -54,7 +70,12 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         // POST
-
+        /// <summary>
+        /// Edit POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="applicationUser"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(string id, ApplicationUser applicationUser)
@@ -76,14 +97,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
             }
 
 
-            // if model not valid - returnt to view passing applicationUser object
+            // if model not valid - return to view passing applicationUser object
             return View(applicationUser);
 
         }
 
 
-        // get edit 
-
+        
+        /// <summary>
+        /// Delete Action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null || id.Trim().Length == 0)
@@ -103,8 +128,12 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        // POST
-
+        
+        /// <summary>
+        /// Delete POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(string id)

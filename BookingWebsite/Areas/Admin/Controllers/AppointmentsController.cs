@@ -14,7 +14,10 @@ using BookingWebsite.Models;
 using BookingWebsite.Models.ViewModel;
 using BookingWebsite.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -26,29 +29,44 @@ namespace BookingWebsite.Areas.Admin.Controllers
     /// Appointments Controller 
     /// </summary>
     /// Authorization for users specified in SD utility class
-    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
+    [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser + "," + SD.Employee + "," + SD.CustomerEndUser + "," + SD.SellerEndUser)]
     [Area("Admin")]
     public class AppointmentsController : Controller
     {
 
         // we need db (dependency injection)
         private readonly ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
+
+
+        //// TODO userManager that hopefully get me user email for filtering customer appointments, lets see if it works
+
+        private readonly UserManager<IdentityUser> _userManager;
 
         //define page size - number per page
-        private int PageSize = 3; //TODO change this after seed to larger number
+        private int PageSize = 6; //TODO change this after seed to larger number
 
         /// <summary>
-        /// constructor
+        /// Constructor
         /// </summary>
-        public AppointmentsController(ApplicationDbContext dbContext)
+        /// <param name="dbContext"></param>
+        /// <param name="userManager"></param>
+        public AppointmentsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender)
         {
             _db = dbContext;
+            _userManager = userManager;
+            _emailSender = emailSender;
         }
 
 
 
 
-        //GET Edit action method
+        /// <summary>
+        /// GET Edit Action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int? id)
         {
 
@@ -68,28 +86,211 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 select p).Include("ProductTypes");
 
 
+
+            // we need to fetch only employees in order to make sure that when manager or admin assigns staff to appointments the list only shows employee users
+            // oh well, this smells like a join query... 
+
+            // first thing first, list application users instance
+            //var users = new List<ApplicationUser>();
+
+
+
+            // join query - to make sure we load only employee users
+            //users.AddRange((from user in _db.ApplicationUser
+            //    join userRole in _db.UserRoles on user.Id equals userRole.UserId
+            //    join role in _db.Roles on userRole.RoleId equals role.Id
+            //    where role.Name.Equals(SD.Employee)
+            //    select new ApplicationUser
+            //    {
+            //        Name = user.Name,
+            //        Id = user.Id,
+            //        Email = user.Email,
+            //        PhoneNumber = user.PhoneNumber,
+            //        City = user.City,
+            //        StreetAddress = user.StreetAddress,
+            //        PostCode = user.PostCode
+
+            //    }).ToList());
+
+            var appointment = _db.Appointments.Find(id);
+
+            var employees = GetAvailableEmployees(appointment, id);
+
+
             // We need new AppointmentsViewModel and to populate with specific appointment data 
             AppointmentDetailsViewModel objAppointmentVM = new AppointmentDetailsViewModel()
             {
 
                 Appointment = _db.Appointments.Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault(),
-                SalesPerson = _db.ApplicationUser.ToList(),
+                // this is where we use out filtered list of users from the join query above
+                SalesPerson = employees.ToList(),
                 Products = productList.ToList()
 
             };
-            
-            
+
+
             // now that we have our products we ween to pas the m on to the view don't we? ;-) 
 
             return View(objAppointmentVM);
         }
 
 
+        public List<ApplicationUser> GetAvailableEmployees(Appointments appointment, int? id)
+        {
+            int timeCheck = 0;
+            int fullCheck = 0;
+            int hoursInAppoint = 0;
+            var users = new List<ApplicationUser>();
+            var employees = new List<ApplicationUser>();
 
+            //Get all employee users from database.
+            users.AddRange((from user in _db.ApplicationUser
+                join userRole in _db.UserRoles on user.Id equals userRole.UserId
+                join role in _db.Roles on userRole.RoleId equals role.Id
+                where role.Name.Equals(SD.Employee)
+                select new ApplicationUser
+                {
+                    Name = user.Name,
+                    Id = user.Id,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    City = user.City,
+                    StreetAddress = user.StreetAddress,
+                    PostCode = user.PostCode
+                }).ToList());
+
+            //Get all products associated with Appointment.
+            var productList = (IEnumerable<Products>) (from p in _db.Products
+                join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
+                where a.AppointmentId == id
+                select p).Include("ProductTypes");
+
+            //Calculate total time requirement, in hours.
+            // based on number of fetched products associated with appointment
+            int time = productList.Count() * 2;
+
+            // appointment time
+            var appointmentStart = appointment.AppointmentDate.Hour;
+            var appointmentEnd = appointment.AppointmentDate.AddHours(time).Hour;
+
+            //Loop for all employees in users list.
+            foreach (ApplicationUser au in users)
+            {
+
+
+                // match user id
+                if (appointment.SalesPersonId == au.Id)
+                {
+                    //add
+                    employees.Add(au);
+                    continue;
+                }
+
+                //
+                var appointmentsFromDb = _db.Appointments.Where(a => a.SalesPersonId == au.Id &&
+                                                                     a.AppointmentDate.Day ==
+                                                                     appointment.AppointmentDate.Day &&
+                                                                     a.AppointmentDate.Month ==
+                                                                     appointment.AppointmentDate.Month &&
+                                                                     a.AppointmentDate.Year ==
+                                                                     appointment.AppointmentDate.Year);
+
+                if (appointmentsFromDb.Count().Equals(0))
+                {
+                    employees.Add(au);
+                }
+                else
+                {
+                    foreach (Appointments appoint in appointmentsFromDb)
+                    {
+                        var associatedProducts = (IEnumerable<Products>) (from p in _db.Products
+                            join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
+                            where a.AppointmentId == id
+                            select p).Include("ProductTypes");
+
+
+                        // if there there are products times that 2 (2hours each appointment
+                        if (!associatedProducts.Count().Equals(0))
+                            hoursInAppoint = associatedProducts.Count() * 2;
+
+                        //Ignore for the moment
+                        //get appointment hour
+                        var appointStart = appoint.AppointmentDate.Hour;
+                        // get appointment end time by adding appointment hours- calculated above
+                        var appointEnd = appoint.AppointmentDate.AddHours(hoursInAppoint).Hour;
+
+
+                        if (appointmentStart == appointEnd)
+                        {
+                            timeCheck++;
+                        }
+
+                        if (appointmentEnd == appointmentStart)
+                        {
+                            timeCheck++;
+                        }
+
+                        for (int i = 0; i <= time - 1; i++)
+                        {
+                            if ((appointmentStart + i) < appointStart || (appointmentStart + i) > appointEnd)
+                            {
+                                timeCheck++;
+                            }
+                        }
+
+                        if (timeCheck == time)
+                        {
+                            fullCheck++;
+                        }
+                        else
+                            break;
+
+                        if (fullCheck == appointmentsFromDb.Count())
+                        {
+                            employees.Add(au);
+                            fullCheck = 0;
+                        }
+
+                        timeCheck = 0;
+                    }
+
+                    fullCheck = 0;
+                    timeCheck = 0;
+                }
+            }
+
+            return employees;
+        }
+
+        /// <summary>
+        /// Edit POST action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="objAppointmentVM"></param>
+        /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Edit(int id, AppointmentDetailsViewModel objAppointmentVM)
         {
+            int available = 0;
 
+            var appointment = _db.Appointments.Find(id);
+
+            var employees = GetAvailableEmployees(appointment, id);
+
+            foreach (ApplicationUser u in employees)
+            {
+                if (objAppointmentVM.Appointment.SalesPersonId == u.Id)
+                {
+                    available = 1;
+                }
+
+            }
+
+            if (available == 0)
+            {
+                return View(objAppointmentVM);
+            }
 
             // chack id Id is valid
             if (id != objAppointmentVM.Appointment.Id)
@@ -107,23 +308,36 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     .AddMinutes(objAppointmentVM.Appointment.AppointmentTime.Minute);
 
 
-                // retrive appointment object from DB //TODO see if can single call to FirstOrDefault()
-                var appointmentFromDb = _db.Appointments.Where(a => a.Id == objAppointmentVM.Appointment.Id).FirstOrDefault();
+                // retrieve appointment object from DB 
+                var appointmentFromDb = _db.Appointments.Where(a => a.Id == objAppointmentVM.Appointment.Id)
+                    .FirstOrDefault();
 
-                // upadte fields taken from the view
+                // update fields taken from the view
                 appointmentFromDb.CustomerName = objAppointmentVM.Appointment.CustomerName;
                 appointmentFromDb.CustomerEmail = objAppointmentVM.Appointment.CustomerEmail;
                 appointmentFromDb.CustomerPhoneNumber = objAppointmentVM.Appointment.CustomerPhoneNumber;
                 appointmentFromDb.AppointmentDate = objAppointmentVM.Appointment.AppointmentDate;
                 appointmentFromDb.isConfirmed = objAppointmentVM.Appointment.isConfirmed;
 
+                
+                
+
                 // check if admin to enable Sales  Person change / assign
-                if (User.IsInRole(SD.SuperAdminEndUser))
+                if (User.IsInRole(SD.SuperAdminEndUser)
+                ) //TODO add Manager to be able to assign Employee to appointment 
                 {
                     // update Sales Person
                     appointmentFromDb.SalesPersonId = objAppointmentVM.Appointment.SalesPersonId;
 
+
                 }
+
+                if (appointmentFromDb.SalesPersonId != null)
+                {
+                    appointmentFromDb.isCancelled = false;
+
+                }
+
                 // save
                 await _db.SaveChangesAsync();
 
@@ -135,7 +349,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
             }
             // if state not valid return
-            
+
             return View(objAppointmentVM);
 
 
@@ -150,11 +364,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// we will receive any parameters if user has entered them
         /// productPage set 1 as default: if not parameter is passed it will load first page
         /// </summary>
+        /// <param name="productPage"></param>
+        /// <param name="searchName"></param>
+        /// <param name="searchEmail"></param>
+        /// <param name="searchPhone"></param>
+        /// <param name="searchDate"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Index(int productPage=1, string searchName=null, string searchEmail=null, string searchPhone=null, string searchDate=null)
+        [Authorize]
+        public async Task<IActionResult> Index(int productPage = 1, string searchName = null, string searchEmail = null,
+            string searchPhone = null, string searchDate = null)
         {
             // to identify what is the current user we wil use the security claims principal
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            System.Security.Claims.ClaimsPrincipal curUser = this.User;
 
             // store in var; claims identity = convert to (claimsIdentity) 
             var claimsIdentity = (ClaimsIdentity) this.User.Identity;
@@ -185,16 +406,19 @@ namespace BookingWebsite.Areas.Admin.Controllers
             {
                 param.Append(searchName);
             }
+
             param.Append("&searchEmail=");
             if (searchEmail != null)
             {
                 param.Append(searchEmail);
             }
+
             param.Append("&searchPhone=");
             if (searchPhone != null)
             {
                 param.Append(searchPhone);
             }
+
             param.Append("&searchDate=");
             if (searchDate != null)
             {
@@ -204,21 +428,50 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-
-
             appointmentVM.Appointments = _db.Appointments.Include(a => a.SalesPerson).ToList();
 
             // check if the role of logged in user is admin or super admin (Admin = Sales Person)
-            // if Sales person then only their own appointments are visible to them
-            if (User.IsInRole(SD.AdminEndUser))
+
+            if (User.IsInRole(SD.Employee)) // TODO ,  OK THIS IS WORKING NOW
             {
                 // this is where we use the above created claim to retrieve user ID // 
                 appointmentVM.Appointments =
+
                     appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
             }
-            
 
-            // filter criteria
+
+            // we need to do the same as we did for employee, customer should be able to view their own appointments
+
+            // get current user from _userManager
+            var custUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            // grt customer email
+            var userEmail = custUser.Email;
+
+            // if in role Customer
+            if (User.IsInRole(SD.CustomerEndUser))
+            {
+                // this is where we use the above created claim to retrieve user ID 
+                appointmentVM.Appointments =
+
+                    // TODO, ok so the problem is that customer is not connected with appointments via regular asp created Id but we have a unique email 
+                    appointmentVM.Appointments.Where(a => a.CustomerEmail == userEmail).ToList();
+            }
+
+            //if seller the same applies - seller is a user who can also have appointments , because why not? 
+            if (User.IsInRole(SD.SellerEndUser))
+            {
+                // this is where we use the above created claim to retrieve user ID 
+                appointmentVM.Appointments =
+
+                    // TODO, ok so the problem is that customer is not connected with appointments via regular asp created Id but we have a unique email 
+                    appointmentVM.Appointments.Where(a => a.CustomerEmail == userEmail).ToList();
+            }
+
+
+
+            // filter criteria for out filtering search thing 
             if (searchName != null)
             {
                 // checking if customer name from appointment View Model matches to the passes string that user has entered- to list in case more than one match
@@ -263,26 +516,25 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    
+
                 }
-                
+
 
             }
 
-            // count how many appointmats there is after the search criteria
+            // count how many appointments there is after the search criteria
 
-            var count = appointmentVM.Appointments.Count(); //TODO check this
+            var count = appointmentVM.Appointments.Count();
 
             // order and filter
             // skipping the appointments that were displayed on previous page
             // for example if we are on page two this makes sure that appointments listed on page one are not displayed on page one
-            // in short - it feaches the correct records for the page we are on
+            // in short - it fetches the correct records for the page we are on
             appointmentVM.Appointments = appointmentVM.Appointments.OrderBy(p => p.AppointmentDate)
                 .Skip((productPage - 1) * PageSize)
                 .Take(PageSize).ToList();
-            
-            // now we need to populate PagingInfoModel
 
+            // now we need to populate PagingInfoModel
             appointmentVM.PagingInfo = new PagingInfo
             {
                 CurrentPage = productPage,
@@ -292,14 +544,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
             };
 
 
-            
+
             // return a View with a view model that we created
             return View(appointmentVM);
         }
 
 
-
-        //GET Details action method
+        /// <summary>
+        /// GET Details action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
 
@@ -313,7 +569,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
             // and filter that based on appointment ID that is passed in and retrieve those products
             // we will use Linq to do that
             // join on tables, converted selected products to IEnumerable of products
-            var productList = (IEnumerable<Products>)(from p in _db.Products
+            var productList = (IEnumerable<Products>) (from p in _db.Products
                 join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
                 where a.AppointmentId == id
                 select p).Include("ProductTypes");
@@ -326,22 +582,24 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 Appointment = _db.Appointments.Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault(),
                 SalesPerson = _db.ApplicationUser.ToList(), // TODO FIX THIS
                 Products = productList.ToList(),
-                
-                
+
+
             };
 
-            Debug.WriteLine(objAppointmentVM.SalesPerson);
 
-
-            // now that we have our products we ween to pas the m on to the view don't we? ;-) 
+            // now that we have our products we need to pass them to the view 
 
             return View(objAppointmentVM);
         }
 
 
 
-
-        //GET Delete action method
+        /// <summary>
+        /// GET Delete action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -355,7 +613,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
             // and filter that based on appointment ID that is passed in and retrieve those products
             // we will use Linq to do that
             // join on tables, converted selected products to IEnumerable of products
-            var productList = (IEnumerable<Products>)(from p in _db.Products
+            var productList = (IEnumerable<Products>) (from p in _db.Products
                 join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
                 where a.AppointmentId == id
                 select p).Include("ProductTypes");
@@ -386,6 +644,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
         /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.AdminEndUser + "," + SD.SuperAdminEndUser)]
         public async Task<IActionResult> DtleteConfirmed(int id)
         {
 
@@ -393,15 +652,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
             var appointment = await _db.Appointments.FindAsync(id);
             _db.Appointments.Remove(appointment);
             await _db.SaveChangesAsync();
-            TempData.Add("Delete"," You have successfully removed an appointment,... now what? ;-)");
+            TempData.Add("Delete", " You have successfully removed an appointment,... now what? ;-)");
             return RedirectToAction(nameof(Index));
         }
 
-
-
+        /// <summary>
+        /// Appointment List - Excel File download method
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
         public async Task<IActionResult> AppList()
         {
-            var appList = _db.Appointments.Include(a => a.SalesPerson); //TODO FIX THIS
+            var appList = _db.Appointments.Include(a => a.SalesPerson);
             return View(appList);
         }
 
@@ -411,9 +673,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
         // later on this can be also expanded with SQL JOIN query to include products (for example to include price of a property)
         public void AppListDownload()
         {
-            //TODO make SQL JOIN query to include product type and price in report
+            //get data
             var appointmentsDw = from appointments in _db.Appointments.Include(a => a.SalesPerson)
-                //join selProducts in _db.ProductsSelectedForAppointments on appointments.Id equals selProducts.ProductId
                 orderby appointments.AppointmentDate descending
                 select new
                 {
@@ -423,17 +684,9 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     Phone = appointments.CustomerPhoneNumber,
                     SalesPerson = appointments.SalesPerson.Name,
                     Confirmed = appointments.isConfirmed,
-                    //ProductType = selProducts.Products.ProductTypes.Name,
-                    //ProductPrice = selProducts.Products.Price
+
 
                 };
-
-
-            //var productList = (IEnumerable<Products>)(from p in _db.Products
-            //    join a in _db.ProductsSelectedForAppointments on p.Id equals a.ProductId
-            //    where a.AppointmentId == id
-            //    select p).Include("ProductTypes");
-
 
 
 
@@ -444,7 +697,7 @@ namespace BookingWebsite.Areas.Admin.Controllers
             // lets check if there is any data
             if (numRows > 0) // if there is data
             {
-                // create new instance of excel package - from scratch - it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
+                // create new instance of excel package - from scratch - later it may be ideal to have a static template in DB for reuse but like I said lets keep it simple for now
                 ExcelPackage excel = new ExcelPackage();
 
                 // add excel worksheet
@@ -455,10 +708,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 workSheet.Cells[3, 1].LoadFromCollection(appointmentsDw, true);
                 workSheet.Column(1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
 
-                //We can define block od cells Cells[startRow, startColumn, endRow, endColumn]
+                //We can define block of cells Cells[startRow, startColumn, endRow, endColumn]
                 workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
 
-                // style heading a little
+                // style heading a little - cosmetic styling
                 using (ExcelRange headings = workSheet.Cells[3, 1, 3, 7])
                 {
                     headings.Style.Font.Bold = true;
@@ -466,8 +719,8 @@ namespace BookingWebsite.Areas.Admin.Controllers
                     fill.PatternType = ExcelFillStyle.Solid;
                     fill.BackgroundColor.SetColor(Color.AliceBlue);
                 }
-                
-                // fit columns size
+
+                // fit columns size - autofin based on lenght of data in the cells
                 workSheet.Cells.AutoFitColumns();
 
 
@@ -502,21 +755,15 @@ namespace BookingWebsite.Areas.Admin.Controllers
                 //one thing to bare in mind is file size and memory, on a local pc it's fine we have plenty of memory,
                 //but on a server it may be an issue to load the whole thing - possible out of memory exceptions
                 // what we can do to make sure we are thinking about memory is to stream the data
-
                 // so, lets set up MemoryStream
-
                 using (var memoryStream = new MemoryStream())
                 {
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.Headers["content-disposition"] = "attachment; filename=Appointments.xlsx"; // could ad date time to file
+                    Response.Headers["content-disposition"] =
+                        "attachment; filename=Appointments.xlsx"; // could ad date time to file
                     excel.SaveAs(memoryStream);
                     memoryStream.WriteTo(Response.Body);
                 }
-
-
-
-
-
 
             }
 
@@ -524,8 +771,34 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-     
+        /// <summary>
+        /// Action methos for appointments
+        /// an email will also be sent upon cancellation 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="objAppointmentVM"></param>
+        /// <returns></returns>
+        public IActionResult Cancel(int id, AppointmentDetailsViewModel objAppointmentVM)
+        {
+
+         var appointment = _db.Appointments.FirstOrDefault(a=>a.Id ==id);
+            objAppointmentVM.Appointment = appointment;
 
 
-    }//Include(a => a.SalesPerson).Where(a => a.Id == id).FirstOrDefault()
+            objAppointmentVM.Appointment.isCancelled = true;
+            objAppointmentVM.Appointment.isConfirmed = false;
+
+            _db.SaveChanges();
+
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email,
+            //    "Open Properties - Your Appointment",
+            //    "Your appointment was cancelled successfully");
+            return RedirectToAction(nameof(Index));
+
+        }
+
+       
+
+
+    }
 }

@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookingWebsite.Data;
+using BookingWebsite.Service;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,13 +43,19 @@ namespace BookingWebsite
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()  // Added Identity role
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
+                .AddDefaultUI() // bootstrap 4 ?
                 .AddDefaultTokenProviders();
 
+
+            // email
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
+
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddSessionStateTempDataProvider(); //TODO THIS!
+                .AddSessionStateTempDataProvider(); //TODO THIS! (enables bootstrap warning box via tempData)
             // Adding service for sessions and configure options
             services.AddSession(options =>
             {

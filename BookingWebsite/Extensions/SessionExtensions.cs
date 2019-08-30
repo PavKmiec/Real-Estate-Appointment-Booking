@@ -7,7 +7,10 @@ using Newtonsoft.Json;
 
 namespace BookingWebsite.Extensions
 {
-    // default session extensions class with generic object T - from Microsoft docs
+
+    /// <summary>
+    /// default session extensions class with generic object T - from Microsoft docs
+    /// </summary>
     public static class SessionExtensions
     {
         public static void Set<T>(this ISession session, string key, T value)

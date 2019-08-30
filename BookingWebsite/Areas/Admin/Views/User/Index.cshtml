@@ -1,0 +1,80 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<br /><br />
+
+
+@*<div class="border bacgroundWhite">
+
+
+
+    </div>*@
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Users List</h2>
+    </div>
+    <div class="col-6 text-right">
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-info"><i class="fas fa-plus"></i>&nbsp; Employee Registration </a>
+    </div>
+</div>
+<br />
+<div>
+    <table class="table table-striped">
+        <tr class="table-info">
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.Name)
+
+            </th>
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.Email)
+
+            </th>
+            <th>
+                @*Display name from model*@
+                @Html.DisplayNameFor(m => m.PhoneNumber)
+
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+        @*Using for each to retrieve list from database*@
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.PhoneNumber)
+                </td>
+
+                <td>
+                    @*Check if user is locked or not and display apropirate button / function to lock or unlock*@
+                    @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
+                    {
+                        <a class="btn btn-success text-white" asp-action="Lock" asp-route-id="@item.Id"><i class="fas fa-lock-open"></i> </a>
+
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger text-white" asp-action="UnLock" asp-route-id="@item.Id"><i class="fas fa-lock"></i> </a>
+                    }
+
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="fas fa-trash-alt"></i></a>
+                    @*<partial name="_TableButtonPartial" model="item.Id" />*@ @*- CRUD TODO*@
+                </td>
+
+
+            </tr>
+        }
+
+    </table>
+
+</div>

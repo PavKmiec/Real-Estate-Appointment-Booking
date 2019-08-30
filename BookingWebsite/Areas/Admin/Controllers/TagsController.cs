@@ -10,7 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookingWebsite.Areas.Admin.Controllers
 {
-    [Authorize(Roles = SD.SuperAdminEndUser)]
+    /// <summary>
+    /// Controller for Product Tags
+    /// </summary>
+    [Authorize(Roles = SD.SuperAdminEndUser + "," + SD.AdminEndUser)]
     [Area("Admin")]
     public class TagsController : Controller
     {
@@ -24,6 +27,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         }
 
+        /// <summary>
+        /// Index method action, list of tags 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             // passing Tags List to View from database
@@ -33,7 +40,10 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        // GET Create Action Method
+        /// <summary>
+        /// GET Create
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Create()
         {
             return View();
@@ -41,11 +51,16 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         //POST Create action method
 
-        [HttpPost]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// POST Create
+        /// </summary>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Create(Tags tags)
         {
@@ -68,6 +83,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
         // GET Edit Action Method - retrieving Id which user wants to edit
+        /// <summary>
+        /// GET Edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Edit(int? id)
         {
             // if id is null return nor found
@@ -88,13 +108,18 @@ namespace BookingWebsite.Areas.Admin.Controllers
             return View(tags);
         }
 
-        //POST Edit action method
 
-        [HttpPost]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// POST Edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(int id, Tags tags)
         {
@@ -125,7 +150,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        // GET Details Action Method - retrieving  tag Id which user wants to view
+        /// <summary>
+        /// GET Details Action method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Details(int? id)
         {
             // if id is null return nor found
@@ -149,7 +178,11 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
 
 
-        // GET Delete Action Method - retrieving Id which user wants to edit
+        /// <summary>
+        /// GET Delete Action Method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Delete(int? id)
         {
             // if id is null return nor found
@@ -172,11 +205,16 @@ namespace BookingWebsite.Areas.Admin.Controllers
 
         //POST Delete action method
 
-        [HttpPost, ActionName("Delete")]
 
         // build-in asp.net functionality
         // With each request of httpPost AntiForgeryToken is added and passes along with the request
         // Once it reaches the server it is checked if its valid (not be altered)
+        /// <summary>
+        /// POST Delate action method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("Delete")]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) // all we need to delete is an Id
         {

@@ -35,6 +35,15 @@
             </div>
             <div class="form-group row">
                 <div class="col-4">
+                    <label asp-for="Products.Description"></label>
+                </div>
+                <div class="col-8">
+                    @Html.TextAreaFor(m => m.Products.Description)
+                </div>
+                <span asp-validation-for="Products.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
                     <label asp-for="Products.Image"></label>
                 </div>
                 <div class="col-8">
@@ -98,7 +107,15 @@
     _ValidationPartialScript and we can just use that here *@
 
 @section Scripts
-    {
+{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'lists',
+            menubar: 'file edit format'
+
+        });
+    </script>
     @*Including partial view*@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 

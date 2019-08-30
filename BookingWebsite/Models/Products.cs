@@ -8,21 +8,47 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookingWebsite.Models
 {
+    /// <summary>
+    /// Products Model
+    /// </summary>
     public class Products
     {
+
+        /// <summary>
+        /// Id used by EF
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Product Name
+        /// </summary>
         public string Name { get; set; }
 
+
+        /// <summary>
+        /// Price
+        /// </summary>
         public double Price { get; set; }
 
-
+        /// <summary>
+        /// Availability for sale
+        /// </summary>
         public bool Available { get; set; }
 
+
+        /// <summary>
+        /// image location
+        /// </summary>
         public string Image { get; set; }
 
 
-        // full;part;no
+        /// <summary>
+        /// Product description
+        /// </summary>
+        public string Description { get; set; }
+
+
+        // Furnish detail - (Furnished, unfurnished, part furnished)
         public string FurnishDetail { get; set; }
 
 
@@ -49,5 +75,13 @@ namespace BookingWebsite.Models
         /// </summary>
         [ForeignKey("TagsId")]
         public virtual Tags Tags { get; set; }
+
+
+
+        /// <summary>
+        /// Linking product with user - for sellers to have products
+        /// </summary>
+        public int? UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

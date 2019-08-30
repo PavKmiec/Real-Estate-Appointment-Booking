@@ -26,6 +26,14 @@
                 </div>
 
             </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Products.Description" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    @Html.TextAreaFor(m => m.Products.Description)
+                </div>
+            </div>
             
             <div class="form-group row">
                 <div class="col-4">
@@ -75,4 +83,15 @@
             <a asp-action="Index" class="btn btn-success">Back to List</a>
         </div>
     </div>
+@section Scripts{
+    <script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: "lists",
+        toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+        menubar: 'file edit format',
+        readonly: 1
+    });</script>
+    <script>tinymce.init({ selector: 'textarea' });</script>
 
+}

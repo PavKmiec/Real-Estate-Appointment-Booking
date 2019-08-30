@@ -15,7 +15,7 @@ namespace BookingWebsite.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -35,6 +35,8 @@ namespace BookingWebsite.Data.Migrations
 
                     b.Property<string>("SalesPersonId");
 
+                    b.Property<bool>("isCancelled");
+
                     b.Property<bool>("isConfirmed");
 
                     b.HasKey("Id");
@@ -44,13 +46,89 @@ namespace BookingWebsite.Data.Migrations
                     b.ToTable("Appointments");
                 });
 
+            modelBuilder.Entity("BookingWebsite.Models.Branch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Location")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Branches");
+                });
+
+            modelBuilder.Entity("BookingWebsite.Models.OrderDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<double>("Price");
+
+                    b.Property<int>("ProductsId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("OrderDetailses");
+                });
+
+            modelBuilder.Entity("BookingWebsite.Models.OrderHeader", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AppointmentDate");
+
+                    b.Property<string>("ContactPhone");
+
+                    b.Property<DateTime>("OrderDate");
+
+                    b.Property<double>("OrderTotal");
+
+                    b.Property<string>("PaymentStatus");
+
+                    b.Property<string>("Status");
+
+                    b.Property<string>("TransactionId");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrderHeaders");
+                });
+
             modelBuilder.Entity("BookingWebsite.Models.Products", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ApplicationUserId");
+
                     b.Property<bool>("Available");
+
+                    b.Property<string>("Description");
 
                     b.Property<string>("FurnishDetail");
 
@@ -64,7 +142,11 @@ namespace BookingWebsite.Data.Migrations
 
                     b.Property<int>("TagsId");
 
+                    b.Property<int?>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -290,7 +372,24 @@ namespace BookingWebsite.Data.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("Name");
+                    b.Property<int?>("BranchId");
+
+                    b.Property<string>("City")
+                        .IsRequired();
+
+                    b.Property<string>("Grade");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<string>("PostCode")
+                        .IsRequired();
+
+                    b.Property<string>("StreetAddress")
+                        .IsRequired();
+
+                    b.HasIndex("BranchId");
 
                     b.ToTable("ApplicationUser");
 
@@ -304,8 +403,33 @@ namespace BookingWebsite.Data.Migrations
                         .HasForeignKey("SalesPersonId");
                 });
 
+            modelBuilder.Entity("BookingWebsite.Models.OrderDetails", b =>
+                {
+                    b.HasOne("BookingWebsite.Models.OrderHeader", "OrderHeader")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BookingWebsite.Models.Products", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BookingWebsite.Models.OrderHeader", b =>
+                {
+                    b.HasOne("BookingWebsite.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("BookingWebsite.Models.Products", b =>
                 {
+                    b.HasOne("BookingWebsite.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Products")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("BookingWebsite.Models.ProductTypes", "ProductTypes")
                         .WithMany()
                         .HasForeignKey("ProductTypeId")
@@ -373,6 +497,13 @@ namespace BookingWebsite.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BookingWebsite.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("BookingWebsite.Models.Branch", "Branch")
+                        .WithMany("ApplicationUser")
+                        .HasForeignKey("BranchId");
                 });
 #pragma warning restore 612, 618
         }
